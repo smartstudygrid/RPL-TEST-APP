@@ -137,18 +137,20 @@ select option{background:#061535}
 .logo.has{border:none}.logo img{width:100%;height:100%;object-fit:cover}
 .tn{font-size:36px;line-height:1.1}.ts{font-size:12px;letter-spacing:4px;color:rgba(150,180,255,.6);text-transform:uppercase;margin-top:4px}
 .lock{border:1px solid rgba(200,168,75,.4);background:rgba(200,168,75,.12);border-radius:6px;padding:8px;text-align:center;letter-spacing:3px;color:#c8a84b;text-transform:uppercase;margin-bottom:16px}
-.main{display:grid;grid-template-columns:3.8fr 1.2fr;gap:18px;align-items:start}
-.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.main{display:grid;grid-template-columns:minmax(0,3.8fr) minmax(0,1.2fr);gap:18px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.grid>div{min-width:0}
 .card{position:relative;margin:3px}
-.inner{position:relative;background:linear-gradient(160deg,#0a1628,#060f20 60%,#0a1a10);border:1.5px solid rgba(100,180,255,.4);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
-.img{aspect-ratio:1/1;width:100%;display:flex;align-items:center;justify-content:center;background:rgba(5,15,30,.9);position:relative;flex:none;overflow:hidden}
-.img img{width:100%;height:100%;object-fit:cover}
+.inner{position:relative;min-width:0;background:linear-gradient(160deg,#0a1628,#060f20 60%,#0a1a10);border:1.5px solid rgba(100,180,255,.4);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.img{position:relative;display:block;width:100%;height:0;padding-top:100%;flex:none;overflow:hidden;background:rgba(5,15,30,.9)}
+.img>img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;display:block}
+.img>svg{position:absolute;left:25%;top:25%;height:50%}
 .num{position:absolute;top:5px;left:6px;font:700 11px Oswald;color:rgba(200,168,75,.8);z-index:2}
 .nb{padding:8px 4px;background:rgba(0,10,30,.95);border-top:1px solid rgba(100,180,255,.2);text-align:center;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:28px;display:flex;align-items:center;justify-content:center}
 .nb.e{color:rgba(100,150,255,.4);font-size:11px;letter-spacing:2px}
 .cap .inner{border:2px solid rgba(200,168,75,.6);background:linear-gradient(160deg,#0e1a08,#060f04 60%,#0a1a28)}
 .cl{font:400 11px Oswald;letter-spacing:5px;color:#c8a84b;text-align:center;padding:6px;background:rgba(0,30,10,.9);border-bottom:1px solid rgba(200,168,75,.25)}
-.cap .img{aspect-ratio:1/1}.cap .nb{font:700 14px Oswald;color:#f5d073;letter-spacing:2px;padding:8px 6px}
+.cap .nb{font:700 14px Oswald;color:#f5d073;letter-spacing:2px;padding:8px 6px}
 .ed{margin-top:4px}.ed input[type=text]{padding:4px 8px;font-size:13px}
 .up{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:5px;cursor:pointer;font:700 12px Oswald;letter-spacing:1.5px;text-transform:uppercase;color:#0a0a1a;background:linear-gradient(135deg,#c8a84b,#f5d073);border-radius:6px;padding:6px 4px;transition:.2s}
 .up:hover{box-shadow:0 0 14px rgba(245,208,115,.45);transform:translateY(-1px)}
@@ -184,7 +186,7 @@ body.sq .bar{margin-top:12px;padding-top:10px}
 body.sq .wrap{max-width:none}
 @media(min-width:801px){body.sq .main{max-width:max(560px,calc((200vh - 612px)*1.316 + 18px));margin:0 auto}}
 @media(max-width:800px){body.sq{padding-left:16px}.vt{display:none!important}body.sq .hdr{display:block}}
-@media(max-width:800px){.main{grid-template-columns:1fr}.grid{grid-template-columns:repeat(3,1fr)}.hdr .n{font-size:34px}.tn{font-size:26px}.logo{width:80px;height:80px}.cap{max-width:260px;margin:0 auto}}
+@media(max-width:800px){.main{grid-template-columns:minmax(0,1fr)}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hdr .n{font-size:34px}.tn{font-size:26px}.logo{width:80px;height:80px}.cap{max-width:260px;margin:0 auto}}
 </style>
 </head>
 <body>
@@ -802,7 +804,7 @@ function bar(m){
   const idx = n => first.includes(n) ? first.indexOf(n) : 99;
   const bs = [c.s, c.n].filter(Boolean).sort((a, b) => idx(a) - idx(b));
   const kb = i.inn === 1 ? (m.bat1 === 2 ? 2 : 1) : (m.bat1 === 2 ? 1 : 2);
-  const pic = n => { const p = (S.pics[kb] || {})[n]; return p ? `<span class="opic"><img src="data:image/jpeg;base64,${p}"></span>` : ""; };
+  const pic = n => { const p = (S.pics[kb] || {})[nkey(n)]; return p ? `<span class="opic"><img src="data:image/jpeg;base64,${p}"></span>` : ""; };
   const bt = n => { const [r, b] = bStat(h, n); return `<div class="bt"><span class="nm"><u class="${n === c.s ? "on" : ""}"></u>${esc(n)}</span>${pic(n)}<span class="rn">${r}<small>(${b})</small></span></div>`; };
   const crr = m.balls ? (m.runs / (m.balls / 6)).toFixed(2) : "0.00";
   const left = i.maxb - m.balls;
@@ -826,16 +828,19 @@ function bar(m){
       <div class="mid">${mid}</div>
       <div class="bw">${esc((c.b || "–").toUpperCase())}${c.b ? `<em>${fig(c.b)}</em>` : ""}</div></div></div>`;
 }
+const nkey = n => String(n || "").normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
 async function loadPics(m){
   if (S.picsFor === m.id) return; S.picsFor = m.id; S.pics = {1:{}, 2:{}};
+  let failed = false;
   for (const k of [1, 2]) {
     if (!m["t" + k]) continue;
     try {
-      const d = (await getDoc(doc(db, "squads", m["t" + k]))).data() || {};
-      (d.player_list || []).forEach((n, i) => { const p = (d.squad_pics || {})[i]; if (n && p) S.pics[k][n] = p; });
-      if (d.captain_name && d.cap_pic) S.pics[k][d.captain_name] = d.cap_pic;
-    } catch {}
+      const d = (await getDoc(doc(db, "squads", m["t" + k]))).data() || {}, sp = d.squad_pics || {};
+      (d.player_list || []).forEach((n, i) => { const p = sp[i] ?? sp[String(i)]; if (n && p) S.pics[k][nkey(n)] = p; });
+      if (d.captain_name && d.cap_pic) S.pics[k][nkey(d.captain_name)] = d.cap_pic;
+    } catch (e) { failed = true; console.error("Overlay: could not load squad pictures for", m["t" + k], e); }
   }
+  if (failed) S.picsFor = "";
 }
 function overlay(id){
   document.documentElement.classList.add("ovh"); document.body.classList.add("ovb");
