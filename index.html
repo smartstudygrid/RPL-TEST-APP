@@ -41,15 +41,16 @@ select option{background:#0b111c}
 .chip.on{background:linear-gradient(135deg,#c8a84b,#f5d073);color:#0a0a1a;border-color:#f5d073}
 .tabs{display:flex;gap:8px;margin:4px 0 8px}.btn.sm.on{background:linear-gradient(135deg,#c8a84b,#f5d073);color:#0a0a1a}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-html.ovh{font-size:1vw;background:transparent!important}
-.ph{flex:none;align-self:flex-start;width:7.4rem;height:7.4rem;margin-top:-2.4rem;border:.22rem solid #fff;background:#222;box-shadow:0 0 0 .2rem #000,0 .4rem 1rem rgba(0,0,0,.6);overflow:hidden}
-.ph img{width:100%;height:100%;object-fit:cover;display:block}
+html.ovh{font-size:1vw;background:transparent!important;overflow:hidden}
+html.ovh body{overflow:hidden}
+.opic{flex:none;align-self:flex-start;width:7.4rem;height:7.4rem;margin-top:-2.4rem;border:.22rem solid #fff;background:#222;box-shadow:0 0 0 .2rem #000,0 .4rem 1rem rgba(0,0,0,.6);overflow:hidden}
+.opic img{width:100%;height:100%;object-fit:cover;display:block}
 .ob{position:fixed;left:0;right:0;bottom:0;height:8rem;display:flex;flex-direction:column;color:#fff;font-family:Oswald,sans-serif;text-transform:uppercase;background:linear-gradient(180deg,rgba(14,20,12,.93),rgba(4,6,4,.95));border-top:.14rem solid #7ee02a;border-bottom:.14rem solid #7ee02a;box-shadow:0 0 1.2rem rgba(126,224,42,.45),inset 0 0 1.4rem rgba(126,224,42,.1);overflow:visible}
 .ob1{height:5rem;flex:none;display:flex;align-items:stretch}
 .lp{flex:none;display:flex;align-items:center;justify-content:center;padding:0 3.2rem;background:linear-gradient(180deg,#8cf230,#4e9f12);clip-path:polygon(0 0,100% 0,calc(100% - 1.6rem) 100%,0 100%)}
 .tm{display:flex;align-items:center;line-height:1;color:#fff}
-.tm b{font:700 3.4rem/1 Oswald}
-.sc{align-self:center;font:700 3.4rem/1 Oswald;padding:0 1.4rem;white-space:nowrap}
+.ob .tm b{font:700 3.4rem/1 Oswald}
+.ob .sc{align-self:center;font:700 3.4rem/1 Oswald;padding:0 1.4rem;white-space:nowrap}
 .ovs{align-self:center;flex:none;text-align:center;line-height:1;color:#0a0f06;background:linear-gradient(180deg,#8cf230,#55a814);border-radius:.5rem;padding:.4rem .7rem;margin-right:2rem}
 .ovs small{display:block;font:700 .8rem Oswald;letter-spacing:.15rem}.ovs b{font:700 1.7rem Oswald}.ovs i{font:600 .85rem Oswald;font-style:normal;margin-left:.2rem}
 .bt{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-right:2.4rem}
@@ -139,13 +140,13 @@ select option{background:#061535}
 .main{display:grid;grid-template-columns:3.8fr 1.2fr;gap:18px;align-items:start}
 .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
 .card{position:relative;margin:3px}
-.inner{position:relative;background:linear-gradient(160deg,#0a1628,#060f20 60%,#0a1a10);border:1.5px solid rgba(100,180,255,.4);border-radius:8px;overflow:hidden;min-height:140px;display:flex;flex-direction:column}
-.img{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:rgba(5,15,30,.9);position:relative;flex:1;min-height:0}
+.inner{position:relative;background:linear-gradient(160deg,#0a1628,#060f20 60%,#0a1a10);border:1.5px solid rgba(100,180,255,.4);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.img{aspect-ratio:1/1;width:100%;display:flex;align-items:center;justify-content:center;background:rgba(5,15,30,.9);position:relative;flex:none;overflow:hidden}
 .img img{width:100%;height:100%;object-fit:cover}
 .num{position:absolute;top:5px;left:6px;font:700 11px Oswald;color:rgba(200,168,75,.8);z-index:2}
 .nb{padding:8px 4px;background:rgba(0,10,30,.95);border-top:1px solid rgba(100,180,255,.2);text-align:center;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:28px;display:flex;align-items:center;justify-content:center}
 .nb.e{color:rgba(100,150,255,.4);font-size:11px;letter-spacing:2px}
-.cap .inner{border:2px solid rgba(200,168,75,.6);background:linear-gradient(160deg,#0e1a08,#060f04 60%,#0a1a28);min-height:140px}
+.cap .inner{border:2px solid rgba(200,168,75,.6);background:linear-gradient(160deg,#0e1a08,#060f04 60%,#0a1a28)}
 .cl{font:400 11px Oswald;letter-spacing:5px;color:#c8a84b;text-align:center;padding:6px;background:rgba(0,30,10,.9);border-bottom:1px solid rgba(200,168,75,.25)}
 .cap .img{aspect-ratio:1/1}.cap .nb{font:700 14px Oswald;color:#f5d073;letter-spacing:2px;padding:8px 6px}
 .ed{margin-top:4px}.ed input[type=text]{padding:4px 8px;font-size:13px}
@@ -801,7 +802,7 @@ function bar(m){
   const idx = n => first.includes(n) ? first.indexOf(n) : 99;
   const bs = [c.s, c.n].filter(Boolean).sort((a, b) => idx(a) - idx(b));
   const kb = i.inn === 1 ? (m.bat1 === 2 ? 2 : 1) : (m.bat1 === 2 ? 1 : 2);
-  const pic = n => { const p = (S.pics[kb] || {})[n]; return p ? `<span class="ph"><img src="data:image/jpeg;base64,${p}"></span>` : ""; };
+  const pic = n => { const p = (S.pics[kb] || {})[n]; return p ? `<span class="opic"><img src="data:image/jpeg;base64,${p}"></span>` : ""; };
   const bt = n => { const [r, b] = bStat(h, n); return `<div class="bt"><span class="nm"><u class="${n === c.s ? "on" : ""}"></u>${esc(n)}</span>${pic(n)}<span class="rn">${r}<small>(${b})</small></span></div>`; };
   const crr = m.balls ? (m.runs / (m.balls / 6)).toFixed(2) : "0.00";
   const left = i.maxb - m.balls;
@@ -838,12 +839,18 @@ async function loadPics(m){
 }
 function overlay(id){
   document.documentElement.classList.add("ovh"); document.body.classList.add("ovb");
-  let last = null; const draw = () => { $("#content").innerHTML = last ? bar(last) : ""; };
+  if (!$("#content")) $("#app").innerHTML = `<div id="content"></div>`;
+  let last = null;
+  const draw = () => {
+    const c = $("#content"); if (!c) return;
+    try { c.innerHTML = last ? bar(last) : ""; } catch (e) { console.error("Overlay render error:", e); c.innerHTML = ""; }
+  };
+  if (!id) { console.error("Overlay: missing ?match= id"); return; }
   onSnapshot(ref(id), s => {
     if (!s.exists()) { last = null; return draw(); }
     last = {...s.data(), id:s.id, history:s.data().history || []}; draw();
-    if (S.picsFor !== s.id) loadPics(last).then(draw);
-  });
+    if (S.picsFor !== s.id) loadPics(last).then(draw).catch(() => {});
+  }, e => console.error("Overlay listener error:", e));
 }
 
 async function initScorer(){
@@ -1247,7 +1254,7 @@ async function downloadImg(){
   g.fillStyle = ln; g.fillRect(60, 205, 1480, 2);
   const po = {glow:"#1a6fff", fill:"#0a1628", border:"rgba(100,180,255,.6)", bw:2, ghost:"rgba(64,96,160,.5)", col:"#fff", fam:"Rajdhani", size:22};
   for (let i = 0; i < 17; i++) card(60 + (i % 6) * 186, 240 + Math.floor(i / 6) * 226, 170, 0, 170, 40, pl[i], d.names[i], i + 1, po);
-  card(1200, 240, 340, 36, 317, 58, cap, d.cap_name || "Captain", 18, {glow:"#c8a84b", fill:"#0e1a08", border:"#c8a84b", bw:3, ghost:"rgba(200,168,75,.4)", col:GOLD, fam:"Oswald", size:30});
+  card(1200, 240, 340, 36, 340, 58, cap, d.cap_name || "Captain", 18, {glow:"#c8a84b", fill:"#0e1a08", border:"#c8a84b", bw:3, ghost:"rgba(200,168,75,.4)", col:GOLD, fam:"Oswald", size:30});
   g.textAlign = "center"; g.textBaseline = "alphabetic"; g.fillStyle = "rgba(255,255,255,.75)"; g.font = "600 18px Rajdhani";
   g.fillText("www.smartstudygrid.com  |  Created by Amanullah Khan  |  +966568959394", W / 2, H - 30);
   c.toBlob(b => {
@@ -1309,7 +1316,7 @@ function squad(){
     if (!el.files[0]) return;
     try {
       const k = el.dataset.up;
-      const b = await crop(el.files[0], k === "cap" ? 45 / 42 : 1, k === "logo");
+      const b = await crop(el.files[0], 1, k === "logo");
       el.value = "";
       if (!b) return;
       if (k === "logo") d.logo = b; else if (k === "cap") d.cap_pic = b; else d.pics[k] = b;
