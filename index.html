@@ -139,18 +139,15 @@ select option{background:#061535}
 .main{display:grid;grid-template-columns:3.8fr 1.2fr;gap:18px;align-items:start}
 .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
 .card{position:relative;margin:3px}
-.glow{position:absolute;inset:-3px;border-radius:10px;background:linear-gradient(135deg,#1a6fff,#00cfff,#0044cc);filter:blur(4px);animation:gp 3s ease-in-out infinite}
-@keyframes gp{0%,100%{opacity:.55}50%{opacity:1}}
 .inner{position:relative;background:linear-gradient(160deg,#0a1628,#060f20 60%,#0a1a10);border:1.5px solid rgba(100,180,255,.4);border-radius:8px;overflow:hidden}
 .img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:rgba(5,15,30,.9);position:relative}
 .img img{width:100%;height:100%;object-fit:cover}
 .num{position:absolute;top:5px;left:6px;font:700 11px Oswald;color:rgba(200,168,75,.8);z-index:2}
 .nb{padding:5px 4px 6px;background:rgba(0,10,30,.95);border-top:1px solid rgba(100,180,255,.2);text-align:center;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nb.e{color:rgba(100,150,255,.4);font-size:11px;letter-spacing:2px}
-.cap .glow{background:linear-gradient(135deg,#c8a84b,#f5d073,#c8a84b);inset:-5px;animation-name:gp}
 .cap .inner{border:2px solid rgba(200,168,75,.6);background:linear-gradient(160deg,#0e1a08,#060f04 60%,#0a1a28)}
 .cl{font:400 11px Oswald;letter-spacing:5px;color:#c8a84b;text-align:center;padding:6px;background:rgba(0,30,10,.9);border-bottom:1px solid rgba(200,168,75,.25)}
-.cap .img{aspect-ratio:45/42}.cap .nb{font:700 16px Oswald;color:#f5d073;letter-spacing:2px;padding:8px 6px 10px}
+.cap .img{aspect-ratio:1}.cap .nb{font:700 16px Oswald;color:#f5d073;letter-spacing:2px;padding:8px 6px 10px}
 .ed{margin-top:4px}.ed input[type=text]{padding:4px 8px;font-size:13px}
 .up{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:5px;cursor:pointer;font:700 12px Oswald;letter-spacing:1.5px;text-transform:uppercase;color:#0a0a1a;background:linear-gradient(135deg,#c8a84b,#f5d073);border-radius:6px;padding:6px 4px;transition:.2s}
 .up:hover{box-shadow:0 0 14px rgba(245,208,115,.45);transform:translateY(-1px)}
@@ -199,12 +196,13 @@ import {getFirestore,collection,doc,getDoc,getDocs,arrayUnion,arrayRemove,setDoc
 import {getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,signOut,onAuthStateChanged,reauthenticateWithCredential,EmailAuthProvider,updatePassword,setPersistence,browserSessionPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const cfg = {
-  apiKey: "AIzaSyDkGhScAIq0tkzEosWkScD0doTq9VyLaq4",
-  authDomain: "cricketscoreapp-fa258.firebaseapp.com",
-  projectId: "cricketscoreapp-fa258",
-  storageBucket: "cricketscoreapp-fa258.firebasestorage.app",
-  messagingSenderId: "833946397398",
-  appId: "1:833946397398:web:a14bba67a7e3cbab9d7777"
+  apiKey: "AIzaSyCidnvJ4NN7Xih4LPA0NIRBzB-iZzgNAVU",
+  authDomain: "nearpod-2.firebaseapp.com",
+  databaseURL: "https://nearpod-2-default-rtdb.firebaseio.com",
+  projectId: "nearpod-2",
+  storageBucket: "nearpod-2.firebasestorage.app",
+  messagingSenderId: "881651268912",
+  appId: "1:881651268912:web:c5c3bd18aedc8996979cf5"
 };
 const app = initializeApp(cfg);
 const db = getFirestore(app), auth = getAuth(app);
@@ -299,7 +297,7 @@ function startScreen(){
           $("#si").disabled = false;
           return m("You are not registered as a scorer. Contact admin.");
         }
-        S.teamIds = d.data().team_ids || (d.data().team_id ? [d.data().team_id] : []);
+        S.teamIds = d.data().tids || d.data().team_ids || (d.data().team_id ? [d.data().team_id] : []);
         S.nav = "scorer";
         mainNav();
       } catch (e) {
@@ -422,7 +420,7 @@ function list(){
   if ($("#ad")) $("#ad").onclick = login;
   if ($("#so")) $("#so").onclick = () => signOut(auth);
   if ($("#sch")) $("#sch").onclick = schedule;
-  if ($("#scr")) $("#scr").onclick = scorers;
+  if ($("#scr")) $("#scr").onclick = () => scorers();
   if ($("#et")) $("#et").onclick = () => { S.nav = "squad"; mainNav(); };
   matchList();
 }
@@ -459,32 +457,42 @@ async function role(u){
   S.admin = false; S.tids = []; S.scorers = [];
   if (!u) return;
   try { S.scorers = (await getDocs(collection(db, "scorers"))).docs.map(d => ({id:d.id, ...d.data()})); S.admin = true; }
-  catch { try { const d = await getDoc(doc(db, "scorers", (u.email || "").toLowerCase())); if (d.exists()) { const data = d.data(); S.teamIds = data.team_ids || (data.team_id ? [data.team_id] : []); } } catch {} }
+  catch { try { const d = await getDoc(doc(db, "scorers", (u.email || "").toLowerCase())); if (d.exists()) { const data = d.data(); S.teamIds = data.tids || data.team_ids || (data.team_id ? [data.team_id] : []); } } catch {} }
 }
 const canScore = m => S.admin || (S.teamIds && S.teamIds.length && (S.teamIds.includes(m.t1) || S.teamIds.includes(m.t2)));
 
-function scorers(){
+async function scorers(){
   S.view = "scr"; S.stn = S.stn || S.tours[0].id;
+  if (!S.squads) { try { const sn = await getDocs(collection(db, "squads")); S.squads = sn.docs.map(d => ({id:d.id, name:d.data().team_name || d.id, tid:d.data().tournament || "default"})); } catch {} }
   const rows = (S.scorers || []).filter(x => (x.tids || []).includes(S.stn));
+  const teamsInTournament = S.squads.filter(t => t.tid === S.stn);
   $("#content").innerHTML = `<div class="top"><h1 class="gold">Scorers</h1></div>
     <label>Tournament</label><select id="sn">${S.tours.map(t => `<option value="${esc(t.id)}" ${t.id === S.stn ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</select>
-    <div class="xm"><h3>ADD SCORER</h3><label>Email</label><input id="se" type="text" autocomplete="off"><label>Password (leave blank if they already have an account)</label><input id="sp" type="password" autocomplete="new-password"><button class="btn" id="sa">Add Scorer</button></div>
-    ${rows.map((x, i) => `<div class="card" style="cursor:default"><div class="row"><b>${esc(x.id)}</b></div><button class="btn s sm" data-rs="${i}">Send reset email</button> <button class="btn s sm" data-rm="${i}">Remove</button></div>`).join("") || `<div class="mut c">No scorers in this tournament yet.</div>`}
+    <div class="xm"><h3>ADD SCORER</h3><label>Email</label><input id="se" type="text" autocomplete="off"><label>Password (leave blank if they already have an account)</label><input id="sp" type="password" autocomplete="new-password"><label>Teams (select multiple)</label><div class="chips" id="tchips">${teamsInTournament.map(t => `<button class="chip" data-tid="${esc(t.id)}">${esc(t.name)}</button>`).join("")}</div><button class="btn" id="sa">Add Scorer</button></div>
+    ${rows.map((x, i) => {
+      const scorerTeams = teamsInTournament.filter(t => (x.tids || []).includes(t.id));
+      return `<div class="card" style="cursor:default"><div class="row"><b>${esc(x.id)}</b></div><div class="mut" style="font-size:12px;margin:4px 0">Teams: ${scorerTeams.map(t => esc(t.name)).join(", ") || "None"}</div><button class="btn s sm" data-rs="${i}">Send reset email</button> <button class="btn s sm" data-rm="${i}">Remove</button></div>`;
+    }).join("") || `<div class="mut c">No scorers in this tournament yet.</div>`}
     <button class="btn s" id="bk">← Back</button><div id="msg" class="msg"></div>`;
-  $("#sn").onchange = e => { S.stn = e.target.value; scorers(); };
+  $("#sn").onchange = async e => { S.stn = e.target.value; await scorers(); };
   $("#bk").onclick = list;
+  document.querySelectorAll("#tchips .chip").forEach(chip => {
+    chip.onclick = () => chip.classList.toggle("on");
+  });
   $("#sa").onclick = () => act(async () => {
-    const em = $("#se").value.trim().toLowerCase(), pw = $("#sp").value, tid = $("#sn").value; let note = "Scorer added.";
+    const em = $("#se").value.trim().toLowerCase(), pw = $("#sp").value; let note = "Scorer added.";
     if (!em.includes("@")) return flash("Enter a valid email.");
+    const selectedTeams = [...document.querySelectorAll("#tchips .chip.on")].map(c => c.dataset.tid);
+    if (selectedTeams.length === 0) return flash("Select at least one team.");
     if (pw) {
       if (pw.length < 6) return flash("Password must be at least 6 characters.");
       try { const a2 = getAuth(getApps().find(a => a.name === "sec") || initializeApp(cfg, "sec")); await createUserWithEmailAndPassword(a2, em, pw); await signOut(a2); }
       catch (e) { if (e.code === "auth/email-already-in-use") note = "Added — that email already had an account."; else throw e; }
     }
-    await setDoc(doc(db, "scorers", em), {email:em, tids:arrayUnion(tid)}, {merge:true});
-    await role(auth.currentUser); scorers(); flash(note, true);
+    await setDoc(doc(db, "scorers", em), {email:em, tids:selectedTeams}, {merge:true});
+    await role(auth.currentUser); await scorers(); flash(note, true);
   });
-  document.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const x = rows[+b.dataset.rm]; if (confirm(`Remove ${x.id} from this tournament?`)) act(async () => { await updateDoc(doc(db, "scorers", x.id), {tids:arrayRemove(S.stn)}); await role(auth.currentUser); scorers(); }); });
+  document.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const x = rows[+b.dataset.rm]; if (confirm(`Remove ${x.id} from this tournament?`)) act(async () => { await updateDoc(doc(db, "scorers", x.id), {tids:arrayRemove(S.stn)}); await role(auth.currentUser); await scorers(); }); });
   document.querySelectorAll("[data-rs]").forEach(b => b.onclick = () => act(async () => { await sendPasswordResetEmail(auth, rows[+b.dataset.rs].id); flash("Reset email sent.", true); }));
 }
 
@@ -737,9 +745,17 @@ function matchView(){
   on("#st", () => {
     const u = {status:"live", bat1:+$("#bf").value, innings:1, runs:0, balls:0, history:[], cur:null};
     if (P) {
-      for (const k of [1, 2]) { if (S.sel[k].length !== Math.min(11, m["pl" + k].length)) return flash("Select the playing XI for both teams."); u["xi" + k] = S.sel[k]; u["s" + k] = S.sub[k] || ""; }
+      for (const k of [1, 2]) {
+        const required = Math.min(11, m["pl" + k].length);
+        if (S.sel[k].length !== required) return flash(`Select ${required} players for ${m["n" + k]}.`);
+        u["xi" + k] = S.sel[k];
+        u["s" + k] = S.sub[k] || "";
+      }
     }
-    act(() => updateDoc(ref(m.id), u));
+    act(async () => {
+      await updateDoc(ref(m.id), u);
+      flash("Match started!", true);
+    });
   });
   on("#s2", () => act(() => updateDoc(ref(m.id), {innings:2, inn1:m.runs, inn1w:i.w, inn1b:m.balls, hist1:m.history, runs:0, balls:0, history:[], cur:null})));
   on("#cf", () => {
@@ -977,9 +993,10 @@ function adminPanel(msg = "", cls = "ok"){
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
       <input type="text" id="ue" placeholder="Scorer email" style="flex:1;min-width:200px">
       <input type="password" id="up" placeholder="Password" style="width:150px">
-      <select id="ut" style="width:200px"><option value="">Select Team</option>${S.teams.map(t => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("")}</select>
-      <button class="btn sm auto" id="cu">Add Scorer</button>
     </div>
+    <label style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(200,210,255,.7);font-weight:600;margin-bottom:6px;display:block">Select Teams (multiple allowed)</label>
+    <div class="chips" id="tchips" style="margin-bottom:12px">${S.teams.map(t => `<button class="chip" data-tid="${esc(t.id)}">${esc(t.name)}</button>`).join("")}</div>
+    <button class="btn sm auto" id="cu">Add Scorer</button>
     <div id="ul"></div>
   </div>
   
@@ -1037,7 +1054,7 @@ function adminPanel(msg = "", cls = "ok"){
       const snap = await getDocs(collection(db, "scorers"));
       $("#ul").innerHTML = snap.docs.map(d => {
         const u = d.data();
-        const teamIds = u.team_ids || (u.team_id ? [u.team_id] : []);
+        const teamIds = u.tids || u.team_ids || (u.team_id ? [u.team_id] : []);
         const teamNames = teamIds.map(tid => (S.teams.find(t => t.id === tid) || {}).name || tid).join(", ") || "No teams";
         return `<div style="display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)">
           <b>${esc(u.email)}</b> <span class="badge">${esc(teamNames)}</span>
@@ -1055,10 +1072,13 @@ function adminPanel(msg = "", cls = "ok"){
         const d = await getDoc(doc(db, "scorers", b.dataset.es));
         if (d.exists()) {
           const u = d.data();
-          const teamIds = u.team_ids || (u.team_id ? [u.team_id] : []);
+          const teamIds = u.tids || u.team_ids || (u.team_id ? [u.team_id] : []);
           $("#ue").value = u.email;
           $("#up").value = "";
-          $("#ut").value = teamIds[0] || "";
+          teamIds.forEach(tid => {
+            const chip = document.querySelector(`#tchips [data-tid="${esc(tid)}"]`);
+            if (chip) chip.classList.add("on");
+          });
           $("#cu").textContent = "Update Scorer";
           $("#cu").dataset.edit = b.dataset.es;
         }
@@ -1066,22 +1086,20 @@ function adminPanel(msg = "", cls = "ok"){
     } catch (e) { $("#ul").innerHTML = `<div class="msg err">${esc(e.message)}</div>`; }
   };
   loadUsers();
+  document.querySelectorAll("#tchips .chip").forEach(chip => {
+    chip.onclick = () => chip.classList.toggle("on");
+  });
   $("#cu").onclick = async () => {
-    const em = $("#ue").value.trim(), pw = $("#up").value, teamId = $("#ut").value, editId = $("#cu").dataset.edit;
+    const em = $("#ue").value.trim(), pw = $("#up").value, editId = $("#cu").dataset.edit;
+    const selectedTeams = [...document.querySelectorAll("#tchips .chip.on")].map(c => c.dataset.tid);
     if (!em.includes("@")) return flash("Enter a valid email.");
-    if (pw.length < 6) return flash("Password must be at least 6 characters.");
-    if (!teamId) return flash("Please select a team.");
+    if (selectedTeams.length === 0) return flash("Select at least one team.");
+    if (pw && pw.length < 6) return flash("Password must be at least 6 characters.");
     try {
       if (editId) {
-        // Update existing scorer - get current teams and add new one
-        const snap = await getDoc(doc(db, "scorers", editId));
-        if (snap.exists()) {
-          const currentIds = snap.data().team_ids || [];
-          const newIds = currentIds.includes(teamId) ? currentIds : [...currentIds, teamId];
-          await setDoc(doc(db, "scorers", editId), {team_ids:newIds}, {merge:true});
-        }
+        // Update existing scorer
+        await setDoc(doc(db, "scorers", editId), {tids:selectedTeams}, {merge:true});
         if (pw) {
-          const u = auth.currentUser;
           const a2 = getAuth(getApps().find(a => a.name === "sec") || initializeApp(cfg, "sec"));
           await signInWithEmailAndPassword(a2, em, pw);
           await updatePassword(a2.currentUser, pw);
@@ -1090,21 +1108,25 @@ function adminPanel(msg = "", cls = "ok"){
         flash("Scorer updated successfully!", "ok");
         $("#cu").textContent = "Add Scorer";
         delete $("#cu").dataset.edit;
-        $("#ue").value = ""; $("#up").value = ""; $("#ut").value = "";
+        $("#ue").value = ""; $("#up").value = "";
+        document.querySelectorAll("#tchips .chip").forEach(c => c.classList.remove("on"));
       } else {
         // Create new scorer
-        const a2 = getAuth(getApps().find(a => a.name === "sec") || initializeApp(cfg, "sec"));
-        await createUserWithEmailAndPassword(a2, em, pw);
-        await signOut(a2);
-        await setDoc(doc(db, "scorers", em), {email:em, team_ids:[teamId], created_at:Date.now(), created_by:auth.currentUser.email});
+        if (pw) {
+          const a2 = getAuth(getApps().find(a => a.name === "sec") || initializeApp(cfg, "sec"));
+          await createUserWithEmailAndPassword(a2, em, pw);
+          await signOut(a2);
+        }
+        await setDoc(doc(db, "scorers", em), {email:em, tids:selectedTeams, created_at:Date.now(), created_by:auth.currentUser.email}, {merge:true});
         $("#ue").value = ""; $("#up").value = "";
+        document.querySelectorAll("#tchips .chip").forEach(c => c.classList.remove("on"));
         flash("Scorer created successfully!", "ok");
       }
       loadUsers();
     } catch (e) {
       if (e.code === "auth/email-already-in-use") {
-        await setDoc(doc(db, "scorers", em), {email:em, team_ids:[teamId], created_at:Date.now(), created_by:auth.currentUser.email}, {merge:true});
-        flash("Scorer already exists - team updated.", "ok");
+        await setDoc(doc(db, "scorers", em), {email:em, tids:selectedTeams, created_at:Date.now(), created_by:auth.currentUser.email}, {merge:true});
+        flash("Scorer already exists - teams updated.", "ok");
         loadUsers();
       } else {
         flash(e.message, "err");
@@ -1244,7 +1266,7 @@ function squad(){
   let cards = "";
   for (let i = 0; i < 17; i++){
     const p = d.pics[i];
-    cards += `<div><div class="card"><div class="glow"></div><div class="inner">
+    cards += `<div><div class="card"><div class="inner">
       <div class="num">${i+1}</div>
       <div class="img">${p ? `<img src="data:image/jpeg;base64,${p}">` : `<svg viewBox="0 0 24 24" fill="none" style="width:50%;opacity:.25"><circle cx="12" cy="8" r="4" stroke="#4060a0" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#4060a0" stroke-width="1.5" stroke-linecap="round"/></svg>`}</div>
       ${d.names[i] ? `<div class="nb">${esc(d.names[i])}</div>` : `<div class="nb e">Player</div>`}
@@ -1261,10 +1283,10 @@ function squad(){
   ${edit ? `<div style="margin-bottom:14px"><label class="l">Team Logo</label><label class="up" style="display:inline-flex;padding:7px 18px">📷 ${d.logo ? "Change" : "Upload"} Logo<input type="file" accept="image/*" data-up="logo"></label></div>` : ""}
   <div class="main">
     <div class="grid">${cards}</div>
-    <div><div class="card cap"><div class="glow"></div><div class="inner">
+    <div><div class="card cap"><div class="inner">
       <div class="cl">★ CAPTAIN ★</div>
       <div class="num" style="top:36px;font-size:13px">18</div>
-      <div class="img">${d.cap_pic ? `<img src="data:image/jpeg;base64,${d.cap_pic}">` : `<svg viewBox="0 0 24 24" fill="none" style="width:45%;opacity:.25"><circle cx="12" cy="8" r="4" stroke="#c8a84b" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#c8a84b" stroke-width="1.5" stroke-linecap="round"/></svg>`}</div>
+      <div class="img">${d.cap_pic ? `<img src="data:image/jpeg;base64,${d.cap_pic}">` : `<svg viewBox="0 0 24 24" fill="none" style="width:50%;opacity:.25"><circle cx="12" cy="8" r="4" stroke="#c8a84b" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#c8a84b" stroke-width="1.5" stroke-linecap="round"/></svg>`}</div>
       <div class="nb">${esc(d.cap_name || "Captain")}</div>
     </div></div>
     ${edit ? `<div class="ed"><input type="text" id="cn" value="${esc(d.cap_name)}" placeholder="Captain Name">${up("cap")}</div>` : ""}</div>
