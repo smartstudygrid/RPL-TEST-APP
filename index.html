@@ -866,7 +866,7 @@ const goHome = async () => { S.page = "home"; S.squadMsg = ""; await loadTeams()
 function squadHome(){
   document.body.classList.remove("sq");
   
-  // If scorer has teams, show team selection
+  // If scorer has teams, show team selection (no password needed)
   if (S.teamIds && S.teamIds.length && auth.currentUser && !isSuperAdmin()) {
     const userTeams = S.teams.filter(t => S.teamIds.includes(t.id));
     if (userTeams.length === 1) {
@@ -1073,8 +1073,13 @@ function adminPanel(msg = "", cls = "ok"){
     if (!teamId) return flash("Please select a team.");
     try {
       if (editId) {
-        // Update existing scorer
-        await setDoc(doc(db, "scorers", editId), {team_ids:arrayUnion(teamId)}, {merge:true});
+        // Update existing scorer - get current teams and add new one
+        const snap = await getDoc(doc(db, "scorers", editId));
+        if (snap.exists()) {
+          const currentIds = snap.data().team_ids || [];
+          const newIds = currentIds.includes(teamId) ? currentIds : [...currentIds, teamId];
+          await setDoc(doc(db, "scorers", editId), {team_ids:newIds}, {merge:true});
+        }
         if (pw) {
           const u = auth.currentUser;
           const a2 = getAuth(getApps().find(a => a.name === "sec") || initializeApp(cfg, "sec"));
