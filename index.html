@@ -113,9 +113,42 @@ tr.pt-top td{background:rgba(245,208,115,.10)}
 </style>
 <style id="css-light">
 /* ============ LIGHT MODE (body.light) — share images (#sumImg) & broadcast overlay (.ob) stay dark ============ */
-.hm-theme{position:fixed;right:14px;bottom:14px;z-index:60;width:44px;height:44px;border-radius:50%;border:1px solid rgba(200,168,75,.5);background:rgba(2,8,24,.85);color:#f5d073;font-size:20px;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.4)}
-body.light .hm-theme{background:#fff;color:#8a6d1f;border-color:#e2e8f0}
-body.ovb .hm-theme{display:none}
+.hm-menu{position:fixed;left:14px;top:14px;z-index:9600;width:46px;height:46px;border-radius:999px;border:1px solid rgba(200,168,75,.55);background:linear-gradient(135deg,#c8a84b,#f5d073);color:#0a0a1a;font-size:21px;font-weight:800;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.45);transition:transform .12s ease}
+.hm-menu:active{transform:scale(.93)}
+body.light .hm-menu{background:linear-gradient(135deg,#b8912a,#f5d073);border-color:#b8912a}
+body.ovb .hm-menu,body[data-view="overlay"] .hm-menu{display:none}
+.hm-scrim{position:fixed;inset:0;z-index:9690;background:rgba(2,8,24,.6);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility .22s}
+.hm-scrim.open{opacity:1;visibility:visible}
+body.ovb .hm-scrim,body[data-view="overlay"] .hm-scrim{display:none}
+.hm-drawer{position:fixed;left:0;top:0;bottom:0;z-index:9700;width:min(310px,86vw);background:linear-gradient(180deg,#0a1230,#060b22);border-right:1px solid rgba(200,168,75,.4);box-shadow:24px 0 60px rgba(0,0,0,.5);transform:translateX(-106%);visibility:hidden;transition:transform .24s ease,visibility .24s;display:flex;flex-direction:column}
+.hm-drawer.open{transform:none;visibility:visible}
+body.ovb .hm-drawer,body[data-view="overlay"] .hm-drawer{display:none}
+#hm-drawer-body{overflow-y:auto;padding:16px 14px 20px;display:flex;flex-direction:column;gap:4px;min-height:0;flex:1}
+.hm-dhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 4px 12px;border-bottom:1px solid rgba(200,168,75,.25);margin-bottom:10px}
+.hm-dapp{font:800 22px Oswald;letter-spacing:1px;background:linear-gradient(135deg,#c8a84b,#f5d073,#ffeea0,#f5d073);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hm-duser{font-size:12px;letter-spacing:1px;color:#9aa6d6;margin-top:2px;word-break:break-all}
+.hm-dx{flex:none;width:36px;height:36px;border-radius:999px;border:1px solid rgba(100,160,255,.4);background:transparent;color:#7ab3ff;font-size:15px;cursor:pointer}
+.hm-dsec{font:700 11px Oswald;letter-spacing:3px;color:rgba(200,168,75,.75);text-transform:uppercase;margin:12px 4px 6px}
+.hm-ditem{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;cursor:pointer;border:1px solid transparent;background:rgba(255,255,255,.04);color:#fff;border-radius:999px;padding:11px 16px;font:700 14px Oswald;letter-spacing:1px;margin:0;transition:transform .12s ease,background .12s ease}
+.hm-ditem:active{transform:scale(.97)}
+.hm-ditem:hover{background:rgba(245,208,115,.12)}
+.hm-ditem.on{background:linear-gradient(135deg,#c8a84b,#f5d073);color:#0a0a1a;border-color:transparent}
+.hm-ditem .hm-count{flex:none;min-width:26px;text-align:center;font:800 12px Oswald;background:rgba(255,255,255,.14);border-radius:999px;padding:2px 8px}
+.hm-ditem.on .hm-count{background:rgba(0,0,0,.2);color:#fff}
+.hm-ditem .hm-live-dot{width:8px;height:8px;margin:0}
+.hm-dfoot{margin-top:auto;padding-top:12px;border-top:1px solid rgba(200,168,75,.25);display:flex;flex-direction:column;gap:6px}
+body.light .hm-drawer{background:linear-gradient(180deg,#ffffff,#eef3fa);border-right-color:#e2e8f0}
+body.light .hm-dapp{background:linear-gradient(135deg,#8a6d1f,#b8912a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:none}
+body.light .hm-duser{color:#5b6472}
+body.light .hm-dx{border-color:rgba(29,78,216,.4);color:#1d4ed8}
+body.light .hm-dsec{color:#8a6d1f}
+body.light .hm-ditem{background:#f1f5f9;color:#0f172a}
+body.light .hm-ditem:hover{background:rgba(184,145,42,.14)}
+body.light .hm-ditem .hm-count{background:#e2e8f0;color:#0f172a}
+/* shared pill-button language */
+.btn,.hm-btn{transition:transform .12s ease,box-shadow .12s ease,filter .12s ease}
+.btn:active,.hm-btn:active{transform:scale(.97)}
+.btn.s.sm,.btn.sec.auto{border-radius:999px}
 body.light{background:linear-gradient(180deg,#f8fafc,#e9eff7 55%,#dfe7f2) fixed;color:#17202e;color-scheme:light}
 body.light.ovb{background:transparent!important;color:#fff}
 /* text + accents */
@@ -451,7 +484,9 @@ body.ovb .foot{display:none}
 <div id="scorer-app" hidden></div>
 <div id="sumImg" class="sum-img"></div>
 <div class="hm-foot"><a href="https://www.smartstudygrid.com" target="_blank">www.smartstudygrid.com</a> &nbsp;|&nbsp; Created by Amanullah Khan</div>
-<button id="hm-theme" class="hm-theme" title="Dark / Light mode">🌙</button>
+<button id="hm-menu" class="hm-menu" title="Menu">☰</button>
+<div id="hm-scrim" class="hm-scrim"></div>
+<nav id="hm-drawer" class="hm-drawer" aria-label="App menu"><div id="hm-drawer-body"></div></nav>
 
 <script type="module">
 import {initializeApp,getApps} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -482,6 +517,7 @@ let CurView="home";
 
 // ---------- view manager (disabled stylesheets = zero UI change) ----------
 function setView(v){
+  closeDrawer();
   CurView=v;document.body.dataset.view=v;
   const sq=$("#css-squad"),sc=$("#css-scorer");
   if(sq)sq.disabled=(v!=="squad");
@@ -497,6 +533,57 @@ function setView(v){
   if(v==="scorer")scList();
 }
 window.__showView=setView;
+
+// ---------- slide-in menu drawer (static shell, survives view re-renders) ----------
+function drawerOpen(){return $("#hm-drawer")?.classList.contains("open");}
+function openDrawer(){renderDrawer();$("#hm-drawer")?.classList.add("open");$("#hm-scrim")?.classList.add("open");try{document.body.style.overflow="hidden";}catch{}}
+function closeDrawer(){if(!drawerOpen())return;$("#hm-drawer")?.classList.remove("open");$("#hm-scrim")?.classList.remove("open");try{document.body.style.overflow="";}catch{}}
+function renderDrawer(){
+  const host=$("#hm-drawer-body");if(!host)return;
+  const u=Auth.user,em=myEmail();
+  const myTours=Tours.filter(t=>t.id!=="default"&&tourOwner(t.id)===em);
+  const myM=ScMatches.filter(m=>(Auth.tids||[]).includes(m.tid)||(em&&((m.owner||"").toLowerCase()===em))||tourOwns(m));
+  const liveN=myM.filter(m=>m.status==="live").length;
+  const mySq=SqTeams.filter(t=>canEditSquad(t.id)).length;
+  const item=(go,icon,label,badge)=>`<button class="hm-ditem ${CurView===go?"on":""}" data-go="${go}"><span>${icon} ${label}</span>${badge||""}</button>`;
+  const count=n=>n?`<span class="hm-count">${n}</span>`:"";
+  let h=`<div class="hm-dhead"><div><div class="hm-dapp">SmartCric</div><div class="hm-duser">${u?esc(u.email)+(Auth.admin?" · Admin":""):Auth.guest?"Guest":"Not signed in"}</div></div><button class="hm-dx" id="hm-drawer-x" title="Close">✕</button></div>`;
+  if(!u&&!Auth.guest){
+    h+=`<div class="hm-dsec">Welcome</div>`+item("live","🔴","Live Matches",count(ScMatches.filter(m=>m.status==="live").length))+item("signin","🔑","Sign In");
+  }else{
+    h+=`<div class="hm-dsec">Now</div>`+item("live","🔴","Live Matches",liveN?`<span class="hm-count"><span class="hm-live-dot"></span>${liveN}</span>`:"");
+    h+=`<div class="hm-dsec">Play</div>`+item("scorer","🏏","Score a Match")+item("squad","👥","Squads & Teams");
+    h+=`<div class="hm-dsec">My Stuff</div>`;
+    if(myTours.length)h+=item("mytours","🏆","My Tournaments",count(myTours.length));
+    h+=item("mymatches","📋","My Matches",count(myM.length))+item("mysquads","🛡️","My Squads",count(mySq));
+    h+=`<div class="hm-dsec">Create</div>`+item("newt","➕","New Tournament")+item("newteam","➕","New Team")+item("newmatch","➕","New Match");
+    if(Auth.admin)h+=`<div class="hm-dsec">Admin</div>`+item("admint","🏆","Tournaments")+item("admins","👥","Scorers")+item("admine","✏️","Squad Editors");
+  }
+  h+=`<div class="hm-dfoot"><button class="hm-ditem" data-go="theme"><span>${document.body.classList.contains("light")?"☀️ Light mode":"🌙 Dark mode"}</span><span class="hm-count">${document.body.classList.contains("light")?"On":"Off"}</span></button>`;
+  h+=u?`<button class="hm-ditem" data-go="signout"><span>⏻ Sign Out</span></button>`:`<button class="hm-ditem" data-go="signin"><span>🔑 Sign In</span></button>`;
+  h+=`</div>`;
+  host.innerHTML=h;
+  host.querySelector("#hm-drawer-x").onclick=closeDrawer;
+  host.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>drawerGo(b.dataset.go));
+}
+async function drawerGo(go){
+  const u=Auth.user;
+  if(go==="theme"){toggleTheme();renderDrawer();return;}
+  if(go==="signin"){closeDrawer();Auth.guest=false;await refreshRole(null);setView("home");return;}
+  if(go==="signout"){closeDrawer();await signOut(auth);Auth.guest=false;await refreshRole(null);setView("home");return;}
+  closeDrawer();
+  if(go==="live"||go==="scorer"){ScS.tab="m";setView("scorer");}
+  else if(go==="squad")setView("squad");
+  else if(go==="mytours")myTours();
+  else if(go==="mymatches"){ScS.tab="m";ScS.tour="";setView("scorer");}
+  else if(go==="mysquads")setView("squad");
+  else if(go==="newt"){if(!u)return setView("home");setView("squad");sqUserCreateTournament();}
+  else if(go==="newteam"){if(!u)return setView("home");setView("squad");setTimeout(()=>sqUserAddTeam(),80);}
+  else if(go==="newmatch"){if(!u)return setView("home");setView("scorer");setTimeout(()=>scSchedule(),120);}
+  else if(go==="admint"){setView("squad");setTimeout(()=>sqAdmin(),80);}
+  else if(go==="admins")usersAdmin("home");
+  else if(go==="admine"){setView("squad");setTimeout(()=>squadEditors(),80);}
+}
 
 // ---------- unified role: one admin for both ----------
 async function refreshRole(u){
@@ -573,7 +660,7 @@ async function shareCanvas(canvas,filename,title,text){
 }
 function viewLinkFor(m){return location.origin+location.pathname+"?match="+m.id;}
 function overlayLinkFor(m){return location.origin+location.pathname+"?mode=overlay&match="+m.id;}
-function applyTheme(){try{if(localStorage.getItem("cc-theme")==="light")document.body.classList.add("light");else document.body.classList.remove("light");}catch{}const b=$("#hm-theme");if(b)b.textContent=document.body.classList.contains("light")?"☀️":"🌙";}
+function applyTheme(){try{if(localStorage.getItem("cc-theme")==="light")document.body.classList.add("light");else document.body.classList.remove("light");}catch{}}
 function toggleTheme(){document.body.classList.toggle("light");try{localStorage.setItem("cc-theme",document.body.classList.contains("light")?"light":"dark");}catch{}applyTheme();toast(document.body.classList.contains("light")?"Light mode on.":"Dark mode on.");}
 
 // ---------- HOME (simple landing) ----------
@@ -585,8 +672,7 @@ function renderHome(){
     <div class="hm-hero"><img src="SmartCric.png" class="hm-logo" alt="SmartCric">
     <div class="hm-t">Let your bat do the talking!</div>
     <div class="hm-line"></div></div>
-    <div class="hm-top"><span class="hm-user">${u?esc(u.email)+" · "+(Auth.admin?"Admin":"Signed in"):Auth.guest?"Guest":"Not signed in"}</span>
-    ${u?`<button class="hm-btn sec" style="width:auto;margin:0;padding:8px 14px" id="hm-so" title="Sign out">⏻</button>`:Auth.guest?`<button class="hm-btn sec" style="width:auto;margin:0;padding:8px 14px" id="hm-si-guest" title="Sign in">🔑</button>`:""}</div>
+    <div class="hm-top"><span class="hm-user">${u?esc(u.email)+" · "+(Auth.admin?"Admin":"Signed in"):Auth.guest?"Guest — menu ☰ for options":"Not signed in"}</span></div>
     ${!u&&!Auth.guest?`<div class="hm-login"><div style="display:flex;gap:8px"><button class="hm-btn ${window._su?"sec":""}" id="tab-si" style="margin-top:0">Sign In</button><button class="hm-btn ${window._su?"":"sec"}" id="tab-su" style="margin-top:0">Sign Up</button></div>
       <label>Email</label><input id="hm-e" type="text" autocomplete="username"><label>Password ${window._su?"(min 6)":""}</label><input id="hm-p" type="password" autocomplete="current-password">
       <button class="hm-btn" id="hm-si">${window._su?"Create Account":"Sign In"}</button>
@@ -598,9 +684,6 @@ function renderHome(){
       <div class="hm-card"><button class="hm-btn" id="hm-sc">🏏 Score a Match</button></div>
       <div class="hm-card"><button class="hm-btn" id="hm-sq">👥 Squads &amp; Teams</button></div>
     </div>
-    ${u?`<button class="hm-btn sec" id="hm-nt">＋ Create a Team</button>`:""}
-    ${u&&!isAdmin()&&Tours.some(t=>t.id!=="default"&&tourOwner(t.id)===myEmail())?`<button class="hm-btn sec" id="hm-mt">🏆 My Tournaments</button>`:""}
-    ${isAdmin()?`<div class="hm-card" style="margin-top:14px;text-align:left"><h2>Admin Panels</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="hm-btn sec" style="width:auto" id="hm-ad-t">🏆 Tournaments</button><button class="hm-btn sec" style="width:auto" id="hm-ad-s">👥 Scorers</button><button class="hm-btn sec" style="width:auto" id="hm-ad-e">✏️ Squad Editors</button></div></div>`:""}
   </div>`;
   const m=t=>{const e=$("#hm-m");if(e){e.textContent=t;e.className="hm-msg hm-err";}};
   if($("#tab-si"))$("#tab-si").onclick=()=>{window._su=false;renderHome();};
@@ -625,17 +708,9 @@ function renderHome(){
     const em=($("#hm-e").value||"").trim();if(!em.includes("@"))return m("Enter your email first, then Forgot.");
     try{await sendPasswordResetEmail(auth,em);const e=$("#hm-m");e.textContent="Reset email sent.";e.className="hm-msg hm-ok";}catch(e){m(e.message);}
   };
-  if($("#hm-so"))$("#hm-so").onclick=async()=>{await signOut(auth);Auth.guest=false;await refreshRole(null);renderHome();};
   $("#hm-sq").onclick=()=>setView("squad");
   $("#hm-sc").onclick=()=>setView("scorer");
   document.querySelectorAll("[data-watch]").forEach(b=>b.onclick=()=>{setView("scorer");scOpenMatch(b.dataset.watch);});
-  const goTeam=()=>{setView("squad");setTimeout(()=>sqUserAddTeam(),80);};
-  if($("#hm-nt"))$("#hm-nt").onclick=goTeam;
-  if($("#hm-mt"))$("#hm-mt").onclick=()=>myTours();
-  if($("#hm-ad-t"))$("#hm-ad-t").onclick=()=>{setView("squad");setTimeout(()=>sqAdmin(),80);};
-  if($("#hm-ad-s"))$("#hm-ad-s").onclick=()=>usersAdmin("home");
-  if($("#hm-ad-e"))$("#hm-ad-e").onclick=()=>{setView("squad");setTimeout(()=>squadEditors(),80);};
-  if($("#hm-si-guest"))$("#hm-si-guest").onclick=()=>{Auth.guest=false;renderHome();};
 }
 // user-level create: tournament + team (any signed-in user owns what they create)
 async function sqUserCreateTournament(){
@@ -684,8 +759,7 @@ function sqHome(){
   document.body.classList.remove("sq");
   const u=Auth.user;
   sqRoot().innerHTML=`<div class="wrap"><div class="hdr"><div class="s" id="sq-h-s">&#9670; Season 18 2026 &#9670;</div><div class="n gold" id="sq-h-n">Challenger's Cup</div><div class="t" id="sq-h-t">BUILD YOUR SQUAD</div><div class="line"></div></div>
-  <div id="sq-body"></div><div style="text-align:center;margin-top:10px"><button class="btn sec auto" id="sq-home" title="Home">🏠</button></div></div><div class="vt"><span class="gold" id="vts"></span></div>`;
-  $("#sq-home").onclick=()=>setView("home");
+  <div id="sq-body"></div></div><div class="vt"><span class="gold" id="vts"></span></div>`;
   const b=$("#sq-body");
   const isMine=t=>Auth.admin||(Auth.teamIds||[]).includes(t.id)||((t.owner||"")&&t.owner===myEmail());
   const myTeams=u?SqTeams.filter(isMine):[];
@@ -798,9 +872,8 @@ function sqRender(){
   ${!canEdit&&!SqS.viewOnly?`<div class="lock">View only — ask admin to assign you</div>`:""}
   ${edit?`<div style="margin-bottom:14px"><label class="l">Team Logo</label><label class="up" style="display:inline-flex;padding:7px 18px">📷 ${d.logo?"Change":"Upload"} Logo<input type="file" accept="image/*" data-up="logo"></label></div>`:""}
   <div class="main"><div class="grid">${cards}</div><div><div class="card cap"><div class="glow"></div><div class="inner"><div class="cl">★ CAPTAIN ★</div><div class="num" style="top:36px;font-size:13px">18</div><div class="img">${d.cap_pic?`<img src="data:image/jpeg;base64,${d.cap_pic}">`:`<svg viewBox="0 0 24 24" fill="none" style="width:45%;opacity:.25"><circle cx="12" cy="8" r="4" stroke="#c8a84b" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#c8a84b" stroke-width="1.5" stroke-linecap="round"/></svg>`}</div><div class="nb">${esc(d.cap_name||"Captain")}</div></div></div>${edit?`<div class="ed"><input type="text" id="cn" value="${esc(d.cap_name)}" placeholder="Captain Name">${up("cap")}</div>`:""}</div></div>
-  <div class="bar"><button class="btn sec auto" id="sq-back">← Back to Squad</button><button class="btn sec auto" id="sq-hm" title="Home">🏠</button><button class="btn sec auto" id="dl" title="Download squad image">📥</button>${SqS.viewOnly?`<div class="badge">👁 View Only</div>`:`<div class="seg"><button id="vw" class="${edit?"":"on"}">👁 View</button><button id="ed" class="${edit?"on":""}" ${(d.is_locked||!canEdit)?"disabled":""}>✏️ Edit</button></div>`}<div class="sp"></div><div class="msg ${SqS.msg.startsWith("✅")?"ok":"err"}" style="margin:0">${SqS.msg}</div>${edit?`<button class="btn auto" id="save" title="Save all changes">💾</button>`:""}</div></div>`;
+  <div class="bar"><button class="btn sec auto" id="sq-back">← Back to Squad</button><button class="btn sec auto" id="dl" title="Download squad image">📥</button>${SqS.viewOnly?`<div class="badge">👁 View Only</div>`:`<div class="seg"><button id="vw" class="${edit?"":"on"}">👁 View</button><button id="ed" class="${edit?"on":""}" ${(d.is_locked||!canEdit)?"disabled":""}>✏️ Edit</button></div>`}<div class="sp"></div><div class="msg ${SqS.msg.startsWith("✅")?"ok":"err"}" style="margin:0">${SqS.msg}</div>${edit?`<button class="btn auto" id="save" title="Save all changes">💾</button>`:""}</div></div>`;
   $("#sq-back").onclick=()=>sqHome();
-  $("#sq-hm").onclick=()=>setView("home");
   if($("#vw")){$("#vw").onclick=()=>{SqS.edit=false;SqS.msg="";sqRender();};$("#ed").onclick=()=>{SqS.edit=true;SqS.msg="";sqRender();};}
   $("#dl").onclick=async e=>{const b=e.currentTarget;b.textContent="…";try{await sqDownloadImg();}catch{SqS.msg="Could not create image.";}b.textContent="📥";};
   host.querySelectorAll("[data-n]").forEach(el=>el.oninput=()=>d.names[+el.dataset.n]=el.value);
@@ -858,7 +931,7 @@ function sqAdminRender(msg="",cls="ok"){
   if(!isAdmin()){setView("home");return;}
   const cur=SqS.tour||"default";
   sqRoot().innerHTML=`<div class="wrap"><div class="th"><div><div class="tn gold">Admin Panel</div><div class="ts">Teams · Tournaments · Locks</div></div></div>
-  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sec auto" id="a-home" title="Home">🏠</button><button class="btn sec auto" id="a-users">👥 Scorers</button><button class="btn sec auto" id="a-eds">✏️ Squad Editors</button></div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sec auto" id="a-users">👥 Scorers</button><button class="btn sec auto" id="a-eds">✏️ Squad Editors</button></div>
   <div class="panel"><div class="ph">🏆 Create Tournament</div><div class="row" style="border:none"><input type="text" id="tn" placeholder="Tournament name" style="flex:2;min-width:160px"><input type="text" id="tn-s" placeholder="Season" style="flex:1;min-width:90px"><input type="text" id="tn-y" placeholder="Year" style="flex:1;min-width:70px"><button class="btn sm auto" id="ct">Create</button></div></div>
   <div class="panel"><div class="ph">🏆 Tournaments (${Tours.length})</div>
   ${Tours.map(t=>{const tc=SqTeams.filter(x=>x.tid===t.id).length,mc=ScMatches.filter(x=>x.tid===t.id).length;const st=tourStatus(t.id);return`<div class="row"><b>${st==="archived"?"🗄️":"🏆"} ${esc(t.name)} <small style="opacity:.65">· ${esc(tourSeasonYear(t.id))}${t.city?` · ${esc(t.city)}`:""} · ${tc} teams · ${mc} matches · ${st}</small></b><button class="btn sm auto" data-tedit="${esc(t.id)}">Edit</button><button class="btn sm sec auto" data-tarch="${esc(t.id)}">${st==="archived"?"Unarchive":"Archive"}</button><button class="btn sm sec auto" data-tdel="${esc(t.id)}" style="color:#ff7b7b;border-color:#ff7b7b66">Delete</button></div>`;}).join("")}
@@ -867,10 +940,10 @@ function sqAdminRender(msg="",cls="ok"){
   <div class="panel"><div class="ph">Teams (${SqTeams.filter(t=>t.tid===cur).length})</div>
   ${SqTeams.map((t,i)=>t.tid!==cur?"":`<div class="row"><b>${t.locked?"🔒":"🔓"} ${esc(t.name)}</b><button class="btn sm auto" data-act="lock" data-i="${i}">${t.locked?"Unlock":"Lock"}</button><button class="btn sm auto" data-act="view" data-i="${i}">View</button><button class="btn sm sec auto" data-act="del" data-i="${i}" style="color:#ff7b7b;border-color:#ff7b7b66">Delete</button></div>`).join("")}
   <div class="row" style="border:none"><button class="btn sm auto" id="lall">🔒 Lock All</button><button class="btn sm auto" id="uall">🔓 Unlock All</button></div></div>
-  <div class="bar"><button class="btn sec auto" id="hm" title="Home">🏠</button><div class="msg ${cls}" id="am" style="margin:0">${esc(msg)}</div></div></div>`;
+  <div class="bar"><div class="msg ${cls}" id="am" style="margin:0">${esc(msg)}</div></div></div>`;
   const flash=(t,c)=>{$("#am").className="msg "+c;$("#am").textContent=t;};
   const run=async(fn,ok)=>{try{await fn();await sqLoadTeams();sqAdminRender(ok,"ok");}catch(e){flash(e.message||"Error","err");}};
-  $("#hm").onclick=()=>setView("home");$("#a-home").onclick=()=>setView("home");$("#a-users").onclick=()=>usersAdmin("squad");$("#a-eds").onclick=()=>squadEditors();
+  $("#a-users").onclick=()=>usersAdmin("squad");$("#a-eds").onclick=()=>squadEditors();
   $("#nto").onchange=()=>{SqS.tour=$("#nto").value;sqAdminRender();};
   $("#ct").onclick=()=>{const n=$("#tn").value.trim(),s=$("#tn-s").value.trim(),y=$("#tn-y").value.trim(),id=n.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"t"+Date.now();if(!n||id==="default")return flash("Enter a valid tournament name.","err");if(Tours.some(t=>t.id===id))return flash("That tournament already exists.","err");run(()=>setDoc(doc(db,"tournaments",id),{name:n,season:s,year:y,tagline:"",city:"",desc:"",status:"active",defOvers:"",created:Date.now(),owner:myEmail()}),`Tournament "${n}" created.`);};
   sqRoot().querySelectorAll("[data-tedit]").forEach(b=>b.onclick=()=>sqTourEdit(b.dataset.tedit));
@@ -915,7 +988,7 @@ async function usersAdmin(from,forceTid){
   const render=(fmsg="",isOk=false)=>{
     const list=users.filter(inTour).filter(u=>!fq||u.id.includes(fq));
     host.innerHTML=`<div class="${from==="scorer"?"w":"wrap"}">
-    <div class="top"><h1 class="gold">Scorers</h1><button class="btn s sm" id="u-home" title="Home">🏠</button></div>
+    <div class="top"><h1 class="gold">Scorers</h1></div>
     <div class="mut c" style="margin-bottom:8px">Score-only access — scorers can score matches, nothing else.</div>
     ${forceTid?`<div class="tg">🏆 ${esc(tname(selT))} (your tournament)</div>`:`<label>Tournament</label><select id="us-t">${Tours.map(t=>`<option value="${esc(t.id)}" ${t.id===selT?"selected":""}>${esc(t.name)}</option>`).join("")}</select>`}
     <div class="${from==="scorer"?"xm":"panel"}" style="margin-top:10px"><h3 class="${from==="scorer"?"":"ph"}">Add scorer to ${esc(tname(selT))}</h3>
@@ -928,7 +1001,6 @@ async function usersAdmin(from,forceTid){
     <input id="uq" type="text" placeholder="🔍 Filter by email…" value="${esc(fq)}">
     ${list.map(u=>`<div class="card" style="cursor:default"><div class="row"><b>${esc(u.id)}</b></div><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn s sm" data-rs="${esc(u.id)}">Send reset email</button><button class="btn s sm" data-rm="${esc(u.id)}">Remove</button></div></div>`).join("")||`<div class="mut c" style="margin:14px 0">No scorers in this tournament yet.</div>`}
     <div class="ib-row"><button class="btn s ib" id="ub" title="Back">←</button></div><div id="msg" class="msg" style="color:${isOk?"#6be58c":""}">${esc(fmsg)}</div></div>`;
-    $("#u-home").onclick=()=>setView("home");
     if($("#us-t"))$("#us-t").onchange=e=>{selT=e.target.value;render();};
     $("#uq").oninput=e=>{fq=e.target.value.toLowerCase();const pos=e.target.selectionStart;render();const q=$("#uq");if(q){q.focus();q.setSelectionRange(pos,pos);}};
     $("#ub").onclick=()=>{if(from==="mine")myTours();else if(from==="squad")sqAdmin();else if(from==="home")setView("home");else scList();};
@@ -980,7 +1052,7 @@ async function squadEditors(forceTid,from){
     const selT=SqTeams.find(t=>t.id===selTeam);
     host.innerHTML=`<div class="wrap">
     <div class="th"><div><div class="tn gold">Squad Editors</div><div class="ts">Team · Can edit squad only</div></div></div>
-    <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn sec auto" id="e-home" title="Home">🏠</button><button class="btn sec auto" id="e-back" title="Admin">←</button></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn sec auto" id="e-back" title="Admin">←</button></div>
     <div class="panel"><label class="l">Tournament</label>${forceTid?`<div class="tg">🏆 ${esc(tname(selTour))} (your tournament)</div>`:`<select id="et">${Tours.map(t=>`<option value="${esc(t.id)}" ${t.id===selTour?"selected":""}>${esc(t.name)}</option>`).join("")}<option value="" ${selTour===""?"selected":""}>⭐ Friendly (no tournament)</option></select>`}
     <label class="l">Team</label><select id="em-t">${teamsIn().map(t=>`<option value="${esc(t.id)}" ${t.id===selTeam?"selected":""}>${t.locked?"🔒 ":""}${esc(t.name)}</option>`).join("")||`<option value="">No teams</option>`}</select>
     ${selTeam?`<div class="row" style="border:none"><b>${selT&&selT.locked?"🔒 Locked — editors and admins can't update this squad until unlocked.":"🔓 Unlocked — assigned editors can update."}</b><button class="btn sm auto" id="e-lock">${selT&&selT.locked?"Unlock Team":"Lock Team"}</button></div>`:""}</div>
@@ -990,7 +1062,7 @@ async function squadEditors(forceTid,from){
     <div class="panel"><div class="ph">Editors (${eds.length})</div>
     ${eds.map(u=>`<div class="row"><b>${esc(u.id)}</b><button class="btn sm auto" data-ers="${esc(u.id)}">Send reset</button><button class="btn sm sec auto" data-erm="${esc(u.id)}">Remove</button></div>`).join("")||`<div class="mut c">No editors yet.</div>`}
     </div><div class="msg ${isOk?"ok":"err"}">${esc(fmsg)}</div></div>`;
-    $("#e-home").onclick=()=>setView("home");$("#e-back").onclick=()=>from==="mine"?myTours():sqAdmin();
+    $("#e-back").onclick=()=>from==="mine"?myTours():sqAdmin();
     if($("#et"))$("#et").onchange=e=>{selTour=e.target.value;SqS.tour=selTour;selTeam=teamsIn()[0]?.id||"";render();};
     $("#em-t").onchange=e=>{selTeam=e.target.value;render();};
     if($("#e-lock"))$("#e-lock").onclick=async()=>{const t=SqTeams.find(x=>x.id===selTeam);if(!t)return;await setDoc(doc(db,"squads",selTeam),{is_locked:!t.locked},{merge:true});await sqLoadTeams();render(!t.locked?"Team locked — nobody can update this squad until unlocked.":"Team unlocked — editors can update again.",true);};
@@ -1023,11 +1095,10 @@ async function myTours(){
   sqRoot().innerHTML=`<div class="wrap"><div class="msg">Loading your tournaments…</div></div>`;
   await sqLoadTeams();await loadTours();
   const mine=Tours.filter(t=>t.id!=="default"&&tourOwner(t.id)===myEmail());
-  if(!mine.length){sqRoot().innerHTML=`<div class="wrap"><div class="msg">You don't own any tournament yet — create one from Squad Creator or Scorer.</div><div class="bar"><button class="btn sec auto" id="mt-h" title="Home">🏠</button></div></div>`;$("#mt-h").onclick=()=>setView("home");return;}
+  if(!mine.length){sqRoot().innerHTML=`<div class="wrap"><div class="msg">You don't own any tournament yet — create one from Squad Creator or Scorer.</div></div>`;return;}
   sqRoot().innerHTML=`<div class="wrap"><div class="th"><div><div class="tn gold">My Tournaments</div><div class="ts">Manage what you created</div></div></div>
   ${mine.map(t=>{const tc=SqTeams.filter(x=>x.tid===t.id).length,mc=ScMatches.filter(x=>x.tid===t.id).length;return`<div class="panel"><div class="ph">🏆 ${esc(t.name)} <small style="opacity:.65">· ${esc(tourSeasonYear(t.id))} · ${tc} teams · ${mc} matches</small></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm auto" data-msc="${esc(t.id)}">👥 Scorers</button><button class="btn sm auto" data-mtm="${esc(t.id)}">👥 Teams &amp; Locks</button><button class="btn sm auto" data-mma="${esc(t.id)}">🏏 Matches</button><button class="btn sm sec auto" data-med="${esc(t.id)}">✎ Edit</button></div></div>`;}).join("")}
-  <div class="bar"><button class="btn sec auto" id="mt-h" title="Home">🏠</button></div></div>`;
-  $("#mt-h").onclick=()=>setView("home");
+  </div>`;
   sqRoot().querySelectorAll("[data-msc]").forEach(b=>b.onclick=()=>usersAdmin("mine",b.dataset.msc));
   sqRoot().querySelectorAll("[data-mtm]").forEach(b=>b.onclick=()=>squadEditors(b.dataset.mtm,"mine"));
   sqRoot().querySelectorAll("[data-mma]").forEach(b=>b.onclick=()=>{ScS.tour=b.dataset.mma;ScS.tab="m";setView("scorer");});
@@ -1177,18 +1248,15 @@ function scList(){
   const ownedTour=Tours.some(t=>tourOwner(t.id)===myEmail());
   const ownedMatch=ScMatches.some(m=>((m.owner||"").toLowerCase()===myEmail()));
   const scoreOnly=!Auth.admin&&!!Auth.user&&(Auth.tids||[]).length>0&&!ownedTour&&!ownedMatch;
-  scRoot().innerHTML=`<div class="w"><div class="top"><button class="btn s sm" id="bk-h" title="Home">🏠</button><h1 class="gold">🏏 SmartCric</h1>${Auth.user?`<button class="btn s sm" id="so" title="Sign out">⏻</button>`:`<button class="btn s sm" id="ad" title="Sign in">🔑</button>`}</div>
+  scRoot().innerHTML=`<div class="w"><div class="top"><h1 class="gold">🏏 SmartCric</h1></div>
     ${scoreOnly?`<div class="tg">👋 You are a scorer — open a match below and score. No scheduling or deleting.</div>`:""}
     <select id="ft">${!scoped()?`<option value="">All tournaments</option>`:vt.length>1?`<option value="">All my tournaments</option>`:""}${vt.map(t=>`<option value="${esc(t.id)}" ${t.id===ScS.tour?"selected":""}>${esc(t.name)}</option>`).join("")}<option value="friendly" ${ScS.tour==="friendly"?"selected":""}>⭐ Friendly</option></select>
     <input id="fq" type="text" placeholder="🔍 Search team / venue…" value="${esc(ScS.fq||"")}" style="margin-top:2px">
     <div class="tabs"><button class="btn s sm ${ScS.tab==="m"?"on":""}" id="tm">Matches</button><button class="btn s sm ${ScS.tab==="p"?"on":""}" id="tp">Points</button><button class="btn s sm ${ScS.tab==="s"?"on":""}" id="ts">🏆 Stats</button></div>
     ${Auth.user&&!scoreOnly?`<button class="btn" id="sch">＋ Schedule Match</button><div style="display:flex;gap:8px"><button class="btn s" style="flex:1" id="ct3">🏆 New Tournament</button>${Auth.admin?`<button class="btn s" style="flex:1" id="scr">👥 Scorers</button>`:""}</div>`:Auth.admin?`<button class="btn s" id="scr">👥 Scorers</button>`:""}<div id="ml"></div><div id="msg" class="msg"></div></div>`;
-  $("#bk-h").onclick=()=>setView("home");
   $("#ft").onchange=e=>{ScS.tour=e.target.value;scMatchList();};
   $("#fq").oninput=e=>{ScS.fq=e.target.value;scMatchList();};
   $("#tm").onclick=()=>{ScS.tab="m";scList();};$("#tp").onclick=()=>{ScS.tab="p";scList();};$("#ts").onclick=()=>{ScS.tab="s";scList();};
-  if($("#ad"))$("#ad").onclick=()=>setView("home");
-  if($("#so"))$("#so").onclick=async()=>{await signOut(auth);Auth.guest=false;await refreshRole(null);setView("home");};
   if($("#sch"))$("#sch").onclick=scSchedule;
   if($("#ct3"))$("#ct3").onclick=()=>sqUserCreateTournament().then(()=>scList());
   if($("#scr"))$("#scr").onclick=()=>usersAdmin("scorer");
@@ -1625,14 +1693,16 @@ const q=new URLSearchParams(location.search),mid=(q.get("match")||"").trim().toU
 if(q.get("mode")==="overlay"&&mid){scOverlay(mid);}
 else{
   applyTheme();
-  const th=$("#hm-theme");if(th)th.onclick=toggleTheme;
+  const mm=$("#hm-menu");if(mm)mm.onclick=()=>{renderDrawer();openDrawer();};
+  const sr=$("#hm-scrim");if(sr)sr.onclick=closeDrawer;
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&drawerOpen()&&!document.querySelector(".app-modal-ov"))closeDrawer();});
   await auth.authStateReady?.();
   await refreshRole(auth.currentUser);
   await loadTours();await sqLoadTeams();
   ScS.sumParam=q.get("summary")==="1";
   if(mid&&!auth.currentUser)Auth.guest=true;
-  onAuthStateChanged(auth,async u=>{await refreshRole(u);if(CurView==="home")renderHome();else if(CurView==="scorer"&&ScS.view==="list")scList();else if(ScS.m)scMatchView();});
-  onSnapshot(collection(db,"matches"),s=>{ScMatches=s.docs.map(d=>({...d.data(),id:d.id}));if(CurView==="scorer"&&ScS.view==="list")scMatchList();if(CurView==="home"){const ae=document.activeElement;if(!ae||!$("#home-app").contains(ae))renderHome();}});
+  onAuthStateChanged(auth,async u=>{await refreshRole(u);if(drawerOpen())renderDrawer();if(CurView==="home")renderHome();else if(CurView==="scorer"&&ScS.view==="list")scList();else if(ScS.m)scMatchView();});
+  onSnapshot(collection(db,"matches"),s=>{ScMatches=s.docs.map(d=>({...d.data(),id:d.id}));if(CurView==="scorer"&&ScS.view==="list")scMatchList();if(drawerOpen())renderDrawer();if(CurView==="home"){const ae=document.activeElement;if(!ae||!$("#home-app").contains(ae))renderHome();}});
   if(mid){setView("scorer");scOpenMatch(mid);}else{setView("home");}
 }
 </script>
