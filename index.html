@@ -344,9 +344,17 @@ const canEditSquad=id=>{if(Auth.admin)return true;if((Auth.teamIds||[]).includes
 const canDeleteMatch=m=>{if(Auth.admin)return true;const o=(m.owner||"").toLowerCase();return o&&o===myEmail();};
 const tname=id=>(Tours.find(t=>t.id===id)||{}).name||id||"";
 const tourOwner=id=>((Tours.find(t=>t.id===id)||{}).owner||"").toLowerCase();
+const tourMeta=id=>Tours.find(t=>t.id===id)||{};
+const tourSeason=id=>tourMeta(id).season||"";
+const tourYear=id=>tourMeta(id).year||"";
+const tourTagline=id=>tourMeta(id).tagline||"";
+const tourStatus=id=>tourMeta(id).status||"active";
+const tourDefOvers=id=>tourMeta(id).defOvers||"";
+const tourSeasonYear=id=>{const s=tourSeason(id),y=tourYear(id);return[s,y].filter(Boolean).join(" ")||"Season 18 2026";};
 const canManageTour=id=>Auth.admin||(tourOwner(id)&&tourOwner(id)===myEmail());
+const tourDoc=d=>({id:d.id,name:d.data().name||d.id,at:d.data().created||0,owner:(d.data().owner||"").toLowerCase(),season:d.data().season||"",year:d.data().year||"",tagline:d.data().tagline||"",city:d.data().city||"",desc:d.data().desc||"",status:d.data().status||"active",defOvers:d.data().defOvers||""});
 async function loadTours(){
-  try{const t=await getDocs(collection(db,"tournaments"));Tours=[{id:"default",name:"Challenger's Cup",owner:""},...t.docs.map(d=>({id:d.id,name:d.data().name||d.id,at:d.data().created||0,owner:(d.data().owner||"").toLowerCase()})).sort((a,b)=>a.at-b.at)];}catch{}
+  try{const t=await getDocs(collection(db,"tournaments"));const docs=t.docs.map(tourDoc);const hasDef=docs.some(d=>d.id==="default");Tours=[...(hasDef?[]:[{id:"default",name:"Challenger's Cup",owner:"",season:"Season 18",year:"2026",tagline:"BUILD YOUR SQUAD",city:"",desc:"",status:"active",defOvers:""}]),...docs].sort((a,b)=>(a.at||0)-(b.at||0));}catch{}
 }
 function toast(msg){let e=$("#hm-toast");if(!e){e=document.createElement("div");e.id="hm-toast";e.className="hm-toast";document.body.appendChild(e);}e.textContent=msg;e.style.display="block";clearTimeout(e._t);e._t=setTimeout(()=>e.style.display="none",2600);}
 function downloadCanvas(canvas,filename){const a=document.createElement("a");a.download=filename;a.href=canvas.toDataURL("image/png");a.click();}
@@ -367,9 +375,10 @@ function renderHome(){
   const u=Auth.user;
   const live=ScMatches.filter(m=>m.status==="live");
   const myT=Tours.filter(t=>t.id!=="default"&&(canManageTour(t.id))).length;
+  const defT=tourMeta("default"),defSY=[defT.season||"Season 18",defT.year||"2026"].filter(Boolean).join(" ");
   $("#home-app").innerHTML=`<div class="hm-wrap">
-    <div class="hm-hero"><div class="hm-s">&#9670; Season 18 2026 &#9670;</div>
-    <div class="hm-n">Challenger's Cup</div>
+    <div class="hm-hero"><div class="hm-s">&#9670; ${esc(defSY)} &#9670;</div>
+    <div class="hm-n">${esc(defT.name||"Challenger's Cup")}</div>
     <div class="hm-t">SQUAD CREATOR &amp; SMART SCORER</div>
     <div class="hm-line"></div>
     <div class="hm-stats">
@@ -432,7 +441,10 @@ function renderHome(){
     const n=prompt("Tournament name:");if(!n||!n.trim())return;
     const name=n.trim(),id=name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"t"+Date.now();
     if(id==="default")return toast("Invalid name.");
-    try{await setDoc(doc(db,"tournaments",id),{name,created:Date.now(),owner:myEmail()});await setDoc(doc(db,"scorers",myEmail()),{tids:arrayUnion(id)},{merge:true});await refreshRole(Auth.user);await loadTours();await sqLoadTeams();toast(`Tournament "${name}" created.`);renderHome();}
+    if(Tours.some(t=>t.id===id))return toast("That tournament already exists.");
+    const season=(prompt("Season (e.g. Season 18):","Season 18")||"").trim();
+    const year=(prompt("Year (e.g. 2026):",String(new Date().getFullYear()))||"").trim();
+    try{await setDoc(doc(db,"tournaments",id),{name,season,year,tagline:"",city:"",desc:"",status:"active",defOvers:"",created:Date.now(),owner:myEmail()});await setDoc(doc(db,"scorers",myEmail()),{tids:arrayUnion(id)},{merge:true});await refreshRole(Auth.user);await loadTours();await sqLoadTeams();toast(`Tournament "${name}" created.`);renderHome();}
     catch(e){toast(e.message);}
   };
 }
@@ -442,7 +454,9 @@ async function sqUserCreateTournament(){
   const n=prompt("Tournament name:");if(!n||!n.trim())return;
   const name=n.trim(),id=name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"t"+Date.now();
   if(Tours.some(t=>t.id===id))return toast("That tournament already exists.");
-  await setDoc(doc(db,"tournaments",id),{name,created:Date.now(),owner:myEmail()});
+  const season=(prompt("Season (e.g. Season 18):","Season 18")||"").trim();
+  const year=(prompt("Year (e.g. 2026):",String(new Date().getFullYear()))||"").trim();
+  await setDoc(doc(db,"tournaments",id),{name,season,year,tagline:"",city:"",desc:"",status:"active",defOvers:"",created:Date.now(),owner:myEmail()});
   await setDoc(doc(db,"scorers",myEmail()),{tids:arrayUnion(id)},{merge:true});
   await refreshRole(Auth.user);await loadTours();await sqLoadTeams();toast(`Tournament "${name}" created.`);sqHome();
 }
@@ -451,7 +465,7 @@ async function sqUserAddTeam(){
   await sqLoadTeams();await loadTours();
   const name=prompt("Team name:");if(!name||!name.trim())return;
   const tn=name.trim();
-  const tids=Tours.map(t=>`${t.id} — ${t.name}`).join("\n");
+  const tids=Tours.filter(t=>tourStatus(t.id)!=="archived").map(t=>`${t.id} — ${t.name}${tourSeasonYear(t.id)?` (${tourSeasonYear(t.id)})`:""}`).join("\n");
   const tid=prompt(`Tournament id for "${tn}"?\n${tids}\n\nType id (default = default):`,"default")||"default";
   if(!Tours.some(t=>t.id===tid))return toast("Unknown tournament.");
   const did=tid==="default"?tn:tid+"__"+tn;
@@ -467,18 +481,19 @@ function sqRoot(){return $("#squad-app");}
 async function sqLoadTeams(){
   try{
     const[snap,ts]=await Promise.all([getDocs(collection(db,"squads")),getDocs(collection(db,"tournaments"))]);
-    Tours=[{id:"default",name:"Challenger's Cup",owner:""},...ts.docs.map(d=>({id:d.id,name:d.data().name||d.id,at:d.data().created||0,owner:(d.data().owner||"").toLowerCase()})).sort((a,b)=>a.at-b.at)];
+    const docs=ts.docs.map(tourDoc);const hasDef=docs.some(d=>d.id==="default");
+    Tours=[...(hasDef?[]:[{id:"default",name:"Challenger's Cup",owner:"",season:"Season 18",year:"2026",tagline:"BUILD YOUR SQUAD",city:"",desc:"",status:"active",defOvers:""}]),...docs].sort((a,b)=>(a.at||0)-(b.at||0));
     SqTeams=snap.docs.map(d=>({id:d.id,name:d.data().team_name||d.id,tid:d.data().tournament||"default",locked:!!d.data().is_locked,pw:d.data().pw_hash||TEAM_HASH,owner:(d.data().owner||"").toLowerCase()})).sort((a,b)=>a.name.localeCompare(b.name));
     SqSeeded=SqTeams.length>0;
     if(!SqSeeded)SqTeams=DEFAULT_TEAMS.map(id=>({id,name:id,tid:"default",locked:false,pw:TEAM_HASH}));
     SqErr="";
-  }catch(e){Tours=[{id:"default",name:"Challenger's Cup"}];SqTeams=DEFAULT_TEAMS.map(id=>({id,name:id,tid:"default",locked:false,pw:TEAM_HASH}));SqErr=e.message;}
+  }catch(e){Tours=[{id:"default",name:"Challenger's Cup",owner:"",season:"Season 18",year:"2026",tagline:"BUILD YOUR SQUAD",city:"",desc:"",status:"active",defOvers:""}];SqTeams=DEFAULT_TEAMS.map(id=>({id,name:id,tid:"default",locked:false,pw:TEAM_HASH}));SqErr=e.message;}
 }
 function sqHome(){
   const sq=$("#css-squad");if(sq)sq.disabled=false;const sc=$("#css-scorer");if(sc)sc.disabled=true;
   document.body.classList.remove("sq");
   const u=Auth.user;
-  sqRoot().innerHTML=`<div class="wrap"><div class="hdr"><div class="s">&#9670; Season 18 2026 &#9670;</div><div class="n gold">Challenger's Cup</div><div class="t">BUILD YOUR SQUAD</div><div class="line"></div></div>
+  sqRoot().innerHTML=`<div class="wrap"><div class="hdr"><div class="s" id="sq-h-s">&#9670; Season 18 2026 &#9670;</div><div class="n gold" id="sq-h-n">Challenger's Cup</div><div class="t" id="sq-h-t">BUILD YOUR SQUAD</div><div class="line"></div></div>
   <div id="sq-body"></div><div style="text-align:center;margin-top:10px"><button class="btn sec auto" id="sq-home">🏠 Home</button></div></div><div class="vt"><span class="gold" id="vts"></span></div>`;
   $("#sq-home").onclick=()=>setView("home");
   const b=$("#sq-body");
@@ -493,8 +508,10 @@ function sqHome(){
     ${Auth.admin?`<button class="btn sec" id="adm" style="margin-top:12px">🛠 Squad Admin</button>`:""}
     ${u?`<div style="display:flex;gap:8px;margin-top:10px"><button class="btn sec auto" id="ct2" style="flex:1">🏆 New Tournament</button><button class="btn sec auto" id="nt3" style="flex:1">👥 New Team</button></div>`:""}
     <div class="msg err" id="m">${esc(SqErr)}</div></div>`;
+  const updHdr=()=>{const tid=$("#tour").value;$("#sq-h-n").textContent=tname(tid)||"Challenger's Cup";$("#sq-h-s").textContent=`◈ ${tourSeasonYear(tid)} ◈`;$("#sq-h-t").textContent=tourTagline(tid)||"BUILD YOUR SQUAD";const v=$("#vts");if(v)v.textContent=tname(tid);};
   const fill=()=>{
     const tid=$("#tour").value;
+    updHdr();
     let list=SqTeams.filter(t=>t.tid===tid);
     if(u&&!Auth.admin){
       const mine=list.filter(isMine);
@@ -552,7 +569,8 @@ async function sqOpen(team,viewOnly){
     SqS.d={is_locked:!!x.is_locked,names:Array.from({length:17},(_,i)=>(x.player_list||[])[i]||""),pics:x.squad_pics||{},cap_name:x.captain_name||"",cap_pic:x.cap_pic||null,logo:x.team_logo||null};
   }catch(e){sqRoot().querySelector("#sq-body").innerHTML=`<div class="login"><div class="msg err">Connection error: ${esc(e.message)}</div></div>`;return;}
   const tm=SqTeams.find(x=>x.id===team);
-  Object.assign(SqS,{team,tname:tm?tm.name:team,tour:(Tours.find(x=>tm&&x.id===tm.tid)||Tours[0]).name,viewOnly,edit:false,msg:""});
+  const ttid=tm?tm.tid:"default";
+  Object.assign(SqS,{team,tname:tm?tm.name:team,tour:(Tours.find(x=>tm&&x.id===tm.tid)||Tours[0]).name,tourSY:tourSeasonYear(ttid),viewOnly,edit:false,msg:""});
   sqRender();
 }
 async function sqDownloadImg(){
@@ -567,7 +585,7 @@ async function sqDownloadImg(){
   const ghost=(cx,cy,r,col)=>{g.strokeStyle=col;g.lineWidth=3;g.beginPath();g.arc(cx,cy-r*.5,r*.5,0,7);g.stroke();g.beginPath();g.arc(cx,cy+r*1.2,r*.95,Math.PI*1.1,Math.PI*1.9);g.stroke();};
   const card=(x,y,w,top,imgH,barH,im,name,num,o)=>{const h=top+imgH+barH;g.save();g.shadowColor=o.glow;g.shadowBlur=20;g.fillStyle=o.fill;rr(x,y,w,h,10);g.fill();g.restore();g.save();rr(x,y,w,h,10);g.clip();g.fillStyle="#050f1e";g.fillRect(x,y+top,w,imgH);if(im)cover(im,x,y+top,w,imgH);else ghost(x+w/2,y+top+imgH/2,w*.16,o.ghost);g.fillStyle="rgba(0,10,30,.95)";g.fillRect(x,y+top+imgH,w,barH);if(top){g.fillStyle="rgba(0,30,10,.95)";g.fillRect(x,y,w,top);g.fillStyle="#c8a84b";g.font="400 16px Oswald";g.textAlign="center";g.textBaseline="middle";g.fillText("★  CAPTAIN  ★",x+w/2,y+top/2);}g.restore();g.strokeStyle=o.border;g.lineWidth=o.bw;rr(x,y,w,h,10);g.stroke();g.textAlign="left";g.textBaseline="alphabetic";g.fillStyle="rgba(200,168,75,.95)";g.font="700 16px Oswald";g.fillText(num,x+10,y+top+24);g.textAlign="center";g.textBaseline="middle";const t=(name||"Player").toUpperCase();g.fillStyle=name?o.col:"rgba(100,150,255,.45)";fit(t,700,o.fam,o.size,w-20);g.fillText(t,x+w/2,y+top+imgH+barH/2+1);};
   g.save();g.beginPath();g.arc(120,110,60,0,7);g.clip();g.fillStyle="#0a1a3a";g.fillRect(60,50,120,120);if(logo)cover(logo,60,50,120,120);g.restore();g.strokeStyle="rgba(200,168,75,.8)";g.lineWidth=3;g.beginPath();g.arc(120,110,60,0,7);g.stroke();
-  g.textAlign="left";g.textBaseline="alphabetic";g.fillStyle="#7ab3ff";g.font="600 20px Oswald";g.fillText(`◆ ${SqS.tour.toUpperCase()} · SEASON 18 2026 ◆`,210,80);
+  g.textAlign="left";g.textBaseline="alphabetic";g.fillStyle="#7ab3ff";g.font="600 20px Oswald";g.fillText(`◆ ${SqS.tour.toUpperCase()} · ${(SqS.tourSY||"Season 18 2026").toUpperCase()} ◆`,210,80);
   g.fillStyle=GOLD;const tn=SqS.tname.toUpperCase();fit(tn,700,"Oswald",76,1300);g.fillText(tn,210,160);
   const ln=g.createLinearGradient(60,0,1540,0);ln.addColorStop(0,"rgba(200,168,75,0)");ln.addColorStop(.5,"rgba(200,168,75,.9)");ln.addColorStop(1,"rgba(200,168,75,0)");g.fillStyle=ln;g.fillRect(60,205,1480,2);
   const po={glow:"#1a6fff",fill:"#0a1628",border:"rgba(100,180,255,.6)",bw:2,ghost:"rgba(64,96,160,.5)",col:"#fff",fam:"Rajdhani",size:22};
@@ -584,7 +602,7 @@ function sqRender(){
   const up=id=>edit?`<label class="up">📷 ${(id==="cap"?d.cap_pic:d.pics[id])?"Change":"Add"} Photo<input type="file" accept="image/*" data-up="${id}"></label>`:"";
   let cards="";
   for(let i=0;i<17;i++){const p=d.pics[i];cards+=`<div><div class="card"><div class="glow"></div><div class="inner"><div class="num">${i+1}</div><div class="img">${p?`<img src="data:image/jpeg;base64,${p}">`:`<svg viewBox="0 0 24 24" fill="none" style="width:50%;opacity:.25"><circle cx="12" cy="8" r="4" stroke="#4060a0" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#4060a0" stroke-width="1.5" stroke-linecap="round"/></svg>`}</div>${d.names[i]?`<div class="nb">${esc(d.names[i])}</div>`:`<div class="nb e">Player</div>`}</div></div>${edit?`<div class="ed"><input type="text" data-n="${i}" value="${esc(d.names[i])}" placeholder="Player ${i+1}">${up(i)}</div>`:""}</div>`;}
-  host.innerHTML=`<div class="wrap"><div class="th"><div class="logo ${d.logo?"has":""}">${d.logo?`<img src="data:image/jpeg;base64,${d.logo}">`:""}</div><div><div class="tn gold">${esc(SqS.tname)}</div><div class="ts">Season 18 2026</div></div></div>
+  host.innerHTML=`<div class="wrap"><div class="th"><div class="logo ${d.logo?"has":""}">${d.logo?`<img src="data:image/jpeg;base64,${d.logo}">`:""}</div><div><div class="tn gold">${esc(SqS.tname)}</div><div class="ts">${esc(SqS.tourSY||"Season 18 2026")}</div></div></div>
   ${d.is_locked&&!SqS.viewOnly?`<div class="lock">🔒 Squad is Locked</div>`:""}
   ${!canEdit&&!SqS.viewOnly?`<div class="lock">View only — ask admin to assign you</div>`:""}
   ${edit?`<div style="margin-bottom:14px"><label class="l">Team Logo</label><label class="up" style="display:inline-flex;padding:7px 18px">📷 ${d.logo?"Change":"Upload"} Logo<input type="file" accept="image/*" data-up="logo"></label></div>`:""}
@@ -615,12 +633,44 @@ async function sqAdmin(){
   }
   await sqLoadTeams();sqAdminRender(SqErr,"err");
 }
+// Tournament editor (super admin = Auth.admin; owners can edit their own)
+function sqTourEdit(id){
+  const t=tourMeta(id);
+  if(!t||!t.id){toast("Unknown tournament.");return;}
+  if(!canManageTour(id)){toast("Not allowed.");return;}
+  document.body.classList.remove("sq");
+  const tc=SqTeams.filter(x=>x.tid===id).length,mc=ScMatches.filter(x=>x.tid===id).length;
+  sqRoot().innerHTML=`<div class="wrap"><div class="th"><div><div class="tn gold">Edit Tournament</div><div class="ts">${esc(t.name)} · ${tc} teams · ${mc} matches</div></div></div>
+  <div class="panel"><div class="ph">Details</div>
+    <label class="l">Name</label><input type="text" id="te-n" value="${esc(t.name)}">
+    <div style="display:flex;gap:8px"><div style="flex:1"><label class="l">Season</label><input type="text" id="te-s" value="${esc(t.season||"")}" placeholder="Season 18"></div><div style="flex:1"><label class="l">Year</label><input type="text" id="te-y" value="${esc(t.year||"")}" placeholder="2026"></div></div>
+    <label class="l">Tagline (shown under name)</label><input type="text" id="te-t" value="${esc(t.tagline||"")}" placeholder="BUILD YOUR SQUAD">
+    <div style="display:flex;gap:8px"><div style="flex:1"><label class="l">City / Venue</label><input type="text" id="te-c" value="${esc(t.city||"")}" placeholder="Riyadh"></div><div style="flex:1"><label class="l">Default overs</label><input type="number" id="te-o" min="1" max="50" value="${esc(t.defOvers||"")}" placeholder="10"></div></div>
+    <label class="l">Status</label><select id="te-st"><option value="active" ${tourStatus(id)!=="archived"?"selected":""}>Active</option><option value="archived" ${tourStatus(id)==="archived"?"selected":""}>Archived (hidden from new-team / schedule pickers)</option></select>
+    <label class="l">Description</label><input type="text" id="te-d" value="${esc(t.desc||"")}" placeholder="Short description">
+    ${Auth.admin?`<div class="hint">ID: ${esc(t.id)} · Owner: ${esc(t.owner||"—")}</div>`:""}
+  </div>
+  <div class="bar"><button class="btn sec auto" id="te-back">← Back</button><div class="sp"></div><button class="btn auto" id="te-save">💾 Save Tournament</button></div>
+  <div class="msg" id="te-m"></div></div>`;
+  $("#te-back").onclick=()=>sqAdminRender();
+  $("#te-save").onclick=async()=>{
+    const n=$("#te-n").value.trim();if(!n){$("#te-m").textContent="Name required.";return;}
+    $("#te-save").disabled=true;$("#te-save").textContent="Saving…";
+    try{
+      await setDoc(doc(db,"tournaments",id),{name:n,season:$("#te-s").value.trim(),year:$("#te-y").value.trim(),tagline:$("#te-t").value.trim(),city:$("#te-c").value.trim(),defOvers:$("#te-o").value.trim(),status:$("#te-st").value,desc:$("#te-d").value.trim()},{merge:true});
+      await sqLoadTeams();toast(`Tournament "${n}" saved.`);sqAdminRender(`"${n}" saved.`,"ok");
+    }catch(e){$("#te-save").disabled=false;$("#te-save").textContent="💾 Save Tournament";$("#te-m").textContent=e.message;}
+  };
+}
 function sqAdminRender(msg="",cls="ok"){
   if(!isAdmin()){setView("home");return;}
   const cur=SqS.tour||"default";
   sqRoot().innerHTML=`<div class="wrap"><div class="th"><div><div class="tn gold">Admin Panel</div><div class="ts">Teams · Tournaments · Locks</div></div></div>
   <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sec auto" id="a-home">🏠 Home</button><button class="btn sec auto" id="a-users">👥 Scorers</button><button class="btn sec auto" id="a-eds">✏️ Squad Editors</button></div>
-  <div class="panel"><div class="ph">🏆 Create Tournament</div><div class="row" style="border:none"><input type="text" id="tn" placeholder="Tournament name"><button class="btn sm auto" id="ct">Create</button></div></div>
+  <div class="panel"><div class="ph">🏆 Create Tournament</div><div class="row" style="border:none"><input type="text" id="tn" placeholder="Tournament name" style="flex:2;min-width:160px"><input type="text" id="tn-s" placeholder="Season" style="flex:1;min-width:90px"><input type="text" id="tn-y" placeholder="Year" style="flex:1;min-width:70px"><button class="btn sm auto" id="ct">Create</button></div></div>
+  <div class="panel"><div class="ph">🏆 Tournaments (${Tours.length})</div>
+  ${Tours.map(t=>{const tc=SqTeams.filter(x=>x.tid===t.id).length,mc=ScMatches.filter(x=>x.tid===t.id).length;const st=tourStatus(t.id);return`<div class="row"><b>${st==="archived"?"🗄️":"🏆"} ${esc(t.name)} <small style="opacity:.65">· ${esc(tourSeasonYear(t.id))}${t.city?` · ${esc(t.city)}`:""} · ${tc} teams · ${mc} matches · ${st}</small></b><button class="btn sm auto" data-tedit="${esc(t.id)}">Edit</button><button class="btn sm sec auto" data-tarch="${esc(t.id)}">${st==="archived"?"Unarchive":"Archive"}</button><button class="btn sm sec auto" data-tdel="${esc(t.id)}" style="color:#ff7b7b;border-color:#ff7b7b66">Delete</button></div>`;}).join("")}
+  </div>
   <div class="panel"><div class="ph">➕ Add Team</div><div class="row"><select id="nto" style="width:200px">${Tours.map(t=>`<option value="${esc(t.id)}" ${t.id===cur?"selected":""}>${esc(t.name)}</option>`).join("")}</select><input type="text" id="nt" placeholder="Team name"><input type="password" id="np" placeholder="Legacy password (optional)"><button class="btn sm auto" id="add">Add Team</button></div><div class="hint">Squad editors are assigned under ✏️ Squad Editors. Scorers under 👥 Scorers. Password is legacy fallback only.</div></div>
   <div class="panel"><div class="ph">Teams (${SqTeams.filter(t=>t.tid===cur).length})</div>
   ${SqTeams.map((t,i)=>t.tid!==cur?"":`<div class="row"><b>${t.locked?"🔒":"🔓"} ${esc(t.name)}</b><button class="btn sm auto" data-act="lock" data-i="${i}">${t.locked?"Unlock":"Lock"}</button><button class="btn sm auto" data-act="view" data-i="${i}">View</button><button class="btn sm sec auto" data-act="del" data-i="${i}" style="color:#ff7b7b;border-color:#ff7b7b66">Delete</button></div>`).join("")}
@@ -630,7 +680,10 @@ function sqAdminRender(msg="",cls="ok"){
   const run=async(fn,ok)=>{try{await fn();await sqLoadTeams();sqAdminRender(ok,"ok");}catch(e){flash(e.message||"Error","err");}};
   $("#hm").onclick=()=>setView("home");$("#a-home").onclick=()=>setView("home");$("#a-users").onclick=()=>usersAdmin("squad");$("#a-eds").onclick=()=>squadEditors();
   $("#nto").onchange=()=>{SqS.tour=$("#nto").value;sqAdminRender();};
-  $("#ct").onclick=()=>{const n=$("#tn").value.trim(),id=n.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"t"+Date.now();if(!n||id==="default")return flash("Enter a valid tournament name.","err");if(Tours.some(t=>t.id===id))return flash("That tournament already exists.","err");run(()=>setDoc(doc(db,"tournaments",id),{name:n,created:Date.now()}),`Tournament "${n}" created.`);};
+  $("#ct").onclick=()=>{const n=$("#tn").value.trim(),s=$("#tn-s").value.trim(),y=$("#tn-y").value.trim(),id=n.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"t"+Date.now();if(!n||id==="default")return flash("Enter a valid tournament name.","err");if(Tours.some(t=>t.id===id))return flash("That tournament already exists.","err");run(()=>setDoc(doc(db,"tournaments",id),{name:n,season:s,year:y,tagline:"",city:"",desc:"",status:"active",defOvers:"",created:Date.now(),owner:myEmail()}),`Tournament "${n}" created.`);};
+  sqRoot().querySelectorAll("[data-tedit]").forEach(b=>b.onclick=()=>sqTourEdit(b.dataset.tedit));
+  sqRoot().querySelectorAll("[data-tarch]").forEach(b=>b.onclick=()=>{const t=tourMeta(b.dataset.tarch);run(()=>setDoc(doc(db,"tournaments",b.dataset.tarch),{status:tourStatus(b.dataset.tarch)==="archived"?"active":"archived"},{merge:true}),`"${t.name}" ${tourStatus(b.dataset.tarch)==="archived"?"unarchived":"archived"}.`);});
+  sqRoot().querySelectorAll("[data-tdel]").forEach(b=>b.onclick=()=>{const t=tourMeta(b.dataset.tdel);const tc=SqTeams.filter(x=>x.tid===t.id).length,mc=ScMatches.filter(x=>x.tid===t.id).length;if(t.id==="default")return flash("The default tournament can't be deleted — archive it instead.","err");if(!confirm(`Delete tournament "${t.name}"?\n${tc} team(s), ${mc} match(es) will be left orphaned (not deleted). Consider Archive instead.\n\nDelete anyway?`))return;run(()=>deleteDoc(doc(db,"tournaments",t.id)),`"${t.name}" deleted.`);});
   const setAll=v=>run(async()=>{const b=writeBatch(db);SqTeams.forEach(t=>b.set(doc(db,"squads",t.id),{is_locked:v},{merge:true}));await b.commit();},v?"All squads LOCKED.":"All squads UNLOCKED.");
   $("#lall").onclick=()=>setAll(true);$("#uall").onclick=()=>setAll(false);
   $("#add").onclick=()=>{
@@ -876,14 +929,15 @@ async function scSchedule(){
     if(!ScSquadsCache){const sn=await getDocs(collection(db,"squads"));ScSquadsCache=sn.docs.map(d=>({id:d.id,name:d.data().team_name||d.id,tid:d.data().tournament||"default",cap:d.data().captain_name||"",pl:[...new Set([d.data().captain_name,...(d.data().player_list||[])].filter(Boolean))]}));}
   }catch(e){scRoot().innerHTML=`<div class="w"><div class="msg">${esc(e.message)}</div><button class="btn s" id="bk">← Back</button></div>`;scRoot().querySelector("#bk").onclick=scList;return;}
   const now=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
+  const stnOpts=Tours.filter(t=>Auth.admin||tourStatus(t.id)!=="archived");
   scRoot().innerHTML=`<div class="w"><div class="top"><h1 class="gold">Schedule Match</h1></div>
-    <label>Tournament</label><select id="stn">${Tours.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("")}</select>
+    <label>Tournament</label><select id="stn">${stnOpts.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}${tourSeasonYear(t.id)?` · ${esc(tourSeasonYear(t.id))}`:""}</option>`).join("")}</select>
     <label>Team A</label><select id="ta"></select><label>Team B</label><select id="tb"></select>
     <label>Overs</label><input id="ov" type="number" min="1" max="50" value="10">
     <label>Date &amp; time</label><input id="dt" type="datetime-local" value="${now}">
     <label>Venue (optional)</label><input id="vn" type="text">
     <button class="btn" id="sv">Save Match</button><button class="btn s" id="bk">Cancel</button><div id="msg" class="msg"></div></div>`;
-  const fill=()=>{const o=ScSquadsCache.filter(t=>t.tid===$("#stn").value).sort((a,b)=>a.name.localeCompare(b.name)).map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");$("#ta").innerHTML=o;$("#tb").innerHTML=o;if($("#tb").options.length>1)$("#tb").selectedIndex=1;};
+  const fill=()=>{const o=ScSquadsCache.filter(t=>t.tid===$("#stn").value).sort((a,b)=>a.name.localeCompare(b.name)).map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");$("#ta").innerHTML=o;$("#tb").innerHTML=o;if($("#tb").options.length>1)$("#tb").selectedIndex=1;const d=tourDefOvers($("#stn").value);if(d)$("#ov").value=d;};
   $("#stn").onchange=fill;fill();scRoot().querySelector("#bk").onclick=scList;
   scRoot().querySelector("#sv").onclick=()=>{
     const tid=$("#stn").value,t1=$("#ta").value,t2=$("#tb").value;
@@ -992,7 +1046,8 @@ async function scDownloadSummaryImage(m,share=false){
   const batRows=list=>{const top=[...list].sort((a,b)=>b.r-a.r).slice(0,3),mx=Math.max(1,...top.map(x=>x.r));return top.map(x=>`<div class="sx-r"><div class="sx-p"><b>${esc(x.n)}${x.out?"":"*"}</b><div class="sx-bar"><u style="width:${Math.round(x.r/mx*100)}%"></u></div></div><div class="sx-v">${x.r}<small>(${x.b})</small></div></div>`).join("");};
   const bowlRows=list=>list.map(x=>{const p=x.f.split("-");return{n:x.n,w:+p[0],r:+p[1],o:p[2]};}).sort((a,b)=>b.w-a.w||a.r-b.r).slice(0,3).map(x=>`<div class="sx-r"><div class="sx-p"><b>${esc(x.n)}</b></div><div class="sx-v">${x.w}-${x.r}<small>(${x.o})</small></div></div>`).join("");
   const col=(t,c)=>`<div class="sx-col ${c}"><div class="sx-ch">${esc(t.n)}</div><div class="sx-two"><div class="sx-half"><div class="sx-sh">BATTING</div>${t.bats.length?batRows(t.bats):`<div class="sx-no">${t.bt?"—":"Yet to bat"}</div>`}</div><div class="sx-half"><div class="sx-sh">BOWLING</div>${t.bows.length?bowlRows(t.bows):`<div class="sx-no">—</div>`}</div></div></div>`;
-  const meta=[when(m.when),m.venue,m.overs?`${m.overs} overs`:""].filter(Boolean).join("  ·  ");
+  const sy=[tourSeason(m.tid),tourYear(m.tid)].filter(Boolean).join(" ");
+  const meta=[when(m.when),m.venue,m.overs?`${m.overs} overs`:"",sy].filter(Boolean).join("  ·  ");
   $("#sumImg").innerHTML=`<div class="sx"><div class="sx-top"><span class="sx-tour">${esc(tname(m.tid)||"Match Summary")}</span><div class="sx-meta">${esc(meta)}</div></div><div class="sx-hero">${hero(T[0],"a")}<div class="sx-vs">VS</div>${hero(T[1],"b")}</div>${i.done?`<div class="sx-res">🏆 ${esc(i.res.toUpperCase())}</div>`:""}<div class="sx-cols">${col(T[0],"a")}${col(T[1],"b")}</div><div class="sx-link">🔗 VIEW LIVE SCORE<br>${esc(link)}</div><div class="sx-ftr">CREATED BY AMANULLAH KHAN  |  WWW.SMARTSTUDYGRID.COM</div></div>`;
   if(!window.html2canvas){$("#sumImg").innerHTML="";return scFlash("html2canvas not loaded. Check internet.");}
   const canvas=await html2canvas($("#sumImg"),{backgroundColor:"#05060f",scale:2,useCORS:true,width:540,height:960});
@@ -1020,7 +1075,7 @@ async function scDownloadPointsImage(share=false){
   if(!rows.length)return toast("No teams yet.");
   const link=location.origin+location.pathname;
   toast("Building points-table image…");
-  $("#sumImg").innerHTML=`<div class="sx"><div class="sx-top"><span class="sx-tour">${esc(tname(ScS.tour))}</span><div class="sx-meta">POINTS TABLE · ${esc(new Date().toLocaleDateString())}</div></div>
+  $("#sumImg").innerHTML=`<div class="sx"><div class="sx-top"><span class="sx-tour">${esc(tname(ScS.tour))}</span><div class="sx-meta">POINTS TABLE · ${esc(tourSeasonYear(ScS.tour))} · ${esc(new Date().toLocaleDateString())}</div></div>
   <div class="pt-wrap">${rows.map((x,i)=>`<div class="sx-r"><div class="sx-p"><b>${i+1}. ${esc(x.n)}</b><div class="sx-bar"><u style="width:${Math.max(8,Math.round(x.pts/Math.max(1,...rows.map(r=>r.pts))*100))}%"></u></div></div><div class="sx-v">${x.pts}<small>pts</small></div></div><div class="mut" style="font-size:12px">P ${x.p} · W ${x.w} · L ${x.l} · T ${x.t} · NRR ${x.nrr==null?"–":(x.nrr>0?"+":"")+x.nrr.toFixed(3)}</div>`).join("")}</div>
   <div class="sx-link">🔗 ${esc(link)}</div><div class="sx-ftr">CREATED BY AMANULLAH KHAN  |  WWW.SMARTSTUDYGRID.COM</div></div>`;
   if(!window.html2canvas){$("#sumImg").innerHTML="";return toast("html2canvas not loaded.");}
@@ -1034,7 +1089,7 @@ async function scDownloadFixtureImage(m,share=false){
   toast("Building fixture image…");
   const[lg1,lg2]=await Promise.all([scTeamLogo(m.t1),scTeamLogo(m.t2)]);
   const logo=(n,lg)=>`<div class="sx-lg" style="${lg?`background-image:url('${lg}')`:""}">${lg?"":esc(abbr(n))}</div>`;
-  $("#sumImg").innerHTML=`<div class="sx"><div class="sx-top"><span class="sx-tour">${esc(tname(m.tid))}</span><div class="sx-meta">UPCOMING FIXTURE · ${m.overs} OVERS</div></div>
+  $("#sumImg").innerHTML=`<div class="sx"><div class="sx-top"><span class="sx-tour">${esc(tname(m.tid))}</span><div class="sx-meta">UPCOMING FIXTURE · ${m.overs} OVERS${[tourSeason(m.tid),tourYear(m.tid)].filter(Boolean).length?` · ${esc([tourSeason(m.tid),tourYear(m.tid)].filter(Boolean).join(" "))}`:""}</div></div>
   <div class="fx-hero"><div style="display:flex;align-items:center;justify-content:space-between"><div class="sx-tm">${logo(m.n1,lg1)}<div class="sx-nm">${esc(m.n1)}</div></div><div class="fx-vs">VS</div><div class="sx-tm b">${logo(m.n2,lg2)}<div class="sx-nm">${esc(m.n2)}</div></div></div>
   <div class="sx-meta" style="margin-top:12px">📅 ${esc(when(m.when))}${m.venue?`<br>📍 ${esc(m.venue)}`:""}</div></div>
   <div class="sx-link">🔗 TAP TO VIEW<br>${esc(link)}</div><div class="sx-qr-sub">Share this card on WhatsApp with the link</div>
