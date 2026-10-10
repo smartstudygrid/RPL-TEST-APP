@@ -47,8 +47,8 @@ body.light .app-modal-t{color:#8a6d1f}
 body.light .app-modal-l{color:#475569}
 body.light .app-modal input,body.light .app-modal select{background:#fff;border-color:#cbd5e1;color:#0f172a}
 body.light .app-modal-msg{color:#334155}
-/* overlay: footer just ABOVE ticker, never over it */
-body.ovb .hm-foot,body[data-view="overlay"] .hm-foot{bottom:8.7rem;background:rgba(2,8,24,.88);border:1px solid rgba(200,168,75,.35)}
+/* overlay: hide app footer entirely (credit tab sits on the ticker's right) */
+body.ovb .hm-foot,body[data-view="overlay"] .hm-foot{display:none}
 /* ---- polished UI additions (all views) ---- */
 .hm-hero{position:relative;border:1px solid rgba(200,168,75,.35);border-radius:18px;padding:26px 22px;overflow:hidden;background:radial-gradient(120% 160% at 50% 0%,rgba(0,110,255,.22),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));box-shadow:0 18px 50px rgba(0,0,0,.45)}
 .hm-hero:before{content:"";position:absolute;left:0;top:0;right:0;height:4px;background:linear-gradient(90deg,#22d3ee,#7b3fff,#f472d0,#f5d073)}
@@ -107,6 +107,9 @@ tr.pt-top td{background:rgba(245,208,115,.10)}
 #sumImg .mut{color:rgba(255,255,255,.55)!important}
 #sumImg .pt-legend{color:rgba(255,255,255,.55)!important}
 #sumImg .pt-pos{background:rgba(255,255,255,.12)!important;color:#fff!important}
+/* icon buttons: equal-share one-row action bars */
+.ib{flex:1 1 0!important;min-width:0;padding:9px 4px!important;font-size:17px!important;line-height:1!important;text-align:center;margin:0!important}
+.ib-row{display:flex;gap:6px;align-items:stretch}
 </style>
 <style id="css-light">
 /* ============ LIGHT MODE (body.light) — share images (#sumImg) & broadcast overlay (.ob) stay dark ============ */
@@ -403,6 +406,43 @@ body.ovb .foot{display:none}
 .sx-v small{font:600 14px Oswald;color:#9aa6d6;margin-left:3px}
 .sx-no{font:600 12px Oswald;letter-spacing:1px;color:#6a77a8;padding:8px 0}
 .sx-ftr{text-align:center;margin-top:14px;font:600 10px Oswald;letter-spacing:2px;color:#7b3fff}
+/* overlay color themes for the classic ticker */
+.ob.gold{border-top-color:#f5d073;border-bottom-color:#f5d073;box-shadow:0 0 1.2rem rgba(245,208,115,.45),inset 0 0 1.4rem rgba(245,208,115,.1)}
+.ob.gold .lp{background:linear-gradient(180deg,#f5d073,#a8842c)}
+.ob.gold .rp{background:linear-gradient(180deg,#8a6d1f,#5c4a12)}
+.ob.gold .ovs{background:linear-gradient(180deg,#f5d073,#c8a84b)}
+.ob.red{border-top-color:#ff5252;border-bottom-color:#ff5252;box-shadow:0 0 1.2rem rgba(255,82,82,.45),inset 0 0 1.4rem rgba(255,82,82,.1)}
+.ob.red .lp{background:linear-gradient(180deg,#ff7a7a,#c81e1e)}
+.ob.red .rp{background:linear-gradient(180deg,#7f1d1d,#450a0a)}
+.ob.red .ovs{background:linear-gradient(180deg,#ff7a7a,#dc2626)}
+.ob.blue{border-top-color:#5b8cff;border-bottom-color:#5b8cff;box-shadow:0 0 1.2rem rgba(91,140,255,.45),inset 0 0 1.4rem rgba(91,140,255,.1)}
+.ob.blue .lp{background:linear-gradient(180deg,#7aa5ff,#1d4ed8)}
+.ob.blue .rp{background:linear-gradient(180deg,#1e3a8a,#172554)}
+.ob.blue .ovs{background:linear-gradient(180deg,#7aa5ff,#2563eb)}
+.ob.neon{border-top-color:#22d3ee;border-bottom-color:#22d3ee;box-shadow:0 0 1.2rem rgba(34,211,238,.45),inset 0 0 1.4rem rgba(34,211,238,.1)}
+.ob.neon .lp{background:linear-gradient(180deg,#67e8f9,#0284c7)}
+.ob.neon .rp{background:linear-gradient(180deg,#818cf8,#4c1d95)}
+.ob.neon .ovs{background:linear-gradient(180deg,#67e8f9,#0369a1)}
+/* big event splash on the right of the screen (4 / 6 / OUT / milestones) */
+.ob-sp{position:fixed;right:5vw;bottom:21rem;z-index:50;text-align:center;pointer-events:none;font-family:Oswald,sans-serif;text-transform:uppercase;animation:obpop 6s ease forwards}
+.ob-sp b{display:block;font:800 6rem/1 Oswald;letter-spacing:.1em}
+.ob-sp span{display:block;font:700 1.6rem Oswald;letter-spacing:.12em;color:#fff;text-shadow:0 .2rem .6rem rgba(0,0,0,.8)}
+.ob-sp.six b{color:#ffd700;text-shadow:0 0 1.5rem rgba(255,215,0,.9),0 .3rem 0 #7a5f00}
+.ob-sp.four b{color:#67e8f9;text-shadow:0 0 1.5rem rgba(103,232,249,.9),0 .3rem 0 #0c4a5e}
+.ob-sp.out b{color:#ff5252;text-shadow:0 0 1.5rem rgba(255,60,60,.9),0 .3rem 0 #5e0c0c}
+.ob-sp.fifty b{color:#b8f23a;text-shadow:0 0 1.5rem rgba(184,242,58,.9),0 .3rem 0 #3d520c}
+.ob-sp.hundred b{color:#f5d073;text-shadow:0 0 2rem rgba(245,208,115,1),0 .3rem 0 #6b4e00}
+@keyframes obpop{0%{transform:scale(.3) rotate(-4deg);opacity:0}8%{transform:scale(1.12) rotate(1deg);opacity:1}14%{transform:scale(1)}80%{transform:scale(1);opacity:1}100%{transform:scale(1.05);opacity:0}}
+/* end-of-over summary card (right side, like TV) */
+.ob-over{position:fixed;right:2vw;bottom:calc(8.6rem + 15vh);width:min(30rem,36vw);z-index:49;background:linear-gradient(180deg,rgba(10,14,20,.97),rgba(4,6,10,.97));border:.1rem solid #f5d073;border-radius:.6rem;overflow:hidden;font-family:Oswald,sans-serif;color:#fff;text-transform:uppercase;animation:obover 12s ease forwards;pointer-events:none}
+.ob-over-h{background:linear-gradient(90deg,#f5d073,#a8842c);color:#0a0a1a;font:700 1.5rem/1.2 Oswald;letter-spacing:.15em;padding:.25rem 1rem}
+.ob-over-s{font:800 2.6rem/1.1 Oswald;padding:.25rem 1rem 0}
+.ob-over-s small{font-size:1.35rem;color:#9aa6d6}
+.ob-over-b{padding:.25rem 1rem 0}
+.ob-over-r{font:700 1.7rem Oswald;color:#ffd700;padding:.15rem 1rem 0;letter-spacing:.08em}
+.ob-over-p{font:600 1.5rem Oswald;color:#dbe2ee;padding:.1rem 1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ob-over-p:last-child{padding-bottom:.5rem}
+@keyframes obover{0%{transform:translateX(30%);opacity:0}4%{transform:none;opacity:1}88%{opacity:1}100%{opacity:0}}
 </style>
 </head>
 <body data-view="home">
@@ -474,11 +514,12 @@ async function refreshRole(u){
 }
 const isAdmin=()=>Auth.admin;
 const myEmail=()=>((Auth.user&&Auth.user.email)||"").toLowerCase();
-const canScore=m=>{if(Auth.admin)return true;if((Auth.tids||[]).includes(m.tid))return true;const o=(m.owner||"").toLowerCase();return o&&o===myEmail();};
+const canScore=m=>{if(Auth.admin)return true;if((Auth.tids||[]).includes(m.tid))return true;if(tourOwns(m))return true;const o=(m.owner||"").toLowerCase();return o&&o===myEmail();};
 const canEditSquad=id=>{if(Auth.admin)return true;if((Auth.teamIds||[]).includes(id))return true;const t=SqTeams.find(x=>x.id===id);const o=(t&&t.owner||"").toLowerCase();return o&&o===myEmail();};
-const canDeleteMatch=m=>{if(Auth.admin)return true;const o=(m.owner||"").toLowerCase();return o&&o===myEmail();};
+const canDeleteMatch=m=>{if(Auth.admin)return true;if(tourOwns(m))return true;const o=(m.owner||"").toLowerCase();return o&&o===myEmail();};
 const tname=id=>{if(!id)return"Friendly";return(Tours.find(t=>t.id===id)||{}).name||id||"";};
 const tourOwner=id=>((Tours.find(t=>t.id===id)||{}).owner||"").toLowerCase();
+const tourOwns=m=>{const o=tourOwner(m.tid);return o&&o===myEmail();};
 const tourMeta=id=>Tours.find(t=>t.id===id)||{};
 const tourSeason=id=>tourMeta(id).season||"";
 const tourYear=id=>tourMeta(id).year||"";
@@ -545,7 +586,7 @@ function renderHome(){
     <div class="hm-t">Let your bat do the talking!</div>
     <div class="hm-line"></div></div>
     <div class="hm-top"><span class="hm-user">${u?esc(u.email)+" · "+(Auth.admin?"Admin":"Signed in"):Auth.guest?"Guest":"Not signed in"}</span>
-    ${u?`<button class="hm-btn sec" style="width:auto;margin:0;padding:8px 14px" id="hm-so">Sign Out</button>`:Auth.guest?`<button class="hm-btn sec" style="width:auto;margin:0;padding:8px 14px" id="hm-si-guest">Sign In</button>`:""}</div>
+    ${u?`<button class="hm-btn sec" style="width:auto;margin:0;padding:8px 14px" id="hm-so" title="Sign out">⏻</button>`:Auth.guest?`<button class="hm-btn sec" style="width:auto;margin:0;padding:8px 14px" id="hm-si-guest" title="Sign in">🔑</button>`:""}</div>
     ${!u&&!Auth.guest?`<div class="hm-login"><div style="display:flex;gap:8px"><button class="hm-btn ${window._su?"sec":""}" id="tab-si" style="margin-top:0">Sign In</button><button class="hm-btn ${window._su?"":"sec"}" id="tab-su" style="margin-top:0">Sign Up</button></div>
       <label>Email</label><input id="hm-e" type="text" autocomplete="username"><label>Password ${window._su?"(min 6)":""}</label><input id="hm-p" type="password" autocomplete="current-password">
       <button class="hm-btn" id="hm-si">${window._su?"Create Account":"Sign In"}</button>
@@ -558,6 +599,7 @@ function renderHome(){
       <div class="hm-card"><button class="hm-btn" id="hm-sq">👥 Squads &amp; Teams</button></div>
     </div>
     ${u?`<button class="hm-btn sec" id="hm-nt">＋ Create a Team</button>`:""}
+    ${u&&!isAdmin()&&Tours.some(t=>t.id!=="default"&&tourOwner(t.id)===myEmail())?`<button class="hm-btn sec" id="hm-mt">🏆 My Tournaments</button>`:""}
     ${isAdmin()?`<div class="hm-card" style="margin-top:14px;text-align:left"><h2>Admin Panels</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="hm-btn sec" style="width:auto" id="hm-ad-t">🏆 Tournaments</button><button class="hm-btn sec" style="width:auto" id="hm-ad-s">👥 Scorers</button><button class="hm-btn sec" style="width:auto" id="hm-ad-e">✏️ Squad Editors</button></div></div>`:""}
   </div>`;
   const m=t=>{const e=$("#hm-m");if(e){e.textContent=t;e.className="hm-msg hm-err";}};
@@ -589,6 +631,7 @@ function renderHome(){
   document.querySelectorAll("[data-watch]").forEach(b=>b.onclick=()=>{setView("scorer");scOpenMatch(b.dataset.watch);});
   const goTeam=()=>{setView("squad");setTimeout(()=>sqUserAddTeam(),80);};
   if($("#hm-nt"))$("#hm-nt").onclick=goTeam;
+  if($("#hm-mt"))$("#hm-mt").onclick=()=>myTours();
   if($("#hm-ad-t"))$("#hm-ad-t").onclick=()=>{setView("squad");setTimeout(()=>sqAdmin(),80);};
   if($("#hm-ad-s"))$("#hm-ad-s").onclick=()=>usersAdmin("home");
   if($("#hm-ad-e"))$("#hm-ad-e").onclick=()=>{setView("squad");setTimeout(()=>squadEditors(),80);};
@@ -641,7 +684,7 @@ function sqHome(){
   document.body.classList.remove("sq");
   const u=Auth.user;
   sqRoot().innerHTML=`<div class="wrap"><div class="hdr"><div class="s" id="sq-h-s">&#9670; Season 18 2026 &#9670;</div><div class="n gold" id="sq-h-n">Challenger's Cup</div><div class="t" id="sq-h-t">BUILD YOUR SQUAD</div><div class="line"></div></div>
-  <div id="sq-body"></div><div style="text-align:center;margin-top:10px"><button class="btn sec auto" id="sq-home">🏠 Home</button></div></div><div class="vt"><span class="gold" id="vts"></span></div>`;
+  <div id="sq-body"></div><div style="text-align:center;margin-top:10px"><button class="btn sec auto" id="sq-home" title="Home">🏠</button></div></div><div class="vt"><span class="gold" id="vts"></span></div>`;
   $("#sq-home").onclick=()=>setView("home");
   const b=$("#sq-body");
   const isMine=t=>Auth.admin||(Auth.teamIds||[]).includes(t.id)||((t.owner||"")&&t.owner===myEmail());
@@ -755,10 +798,11 @@ function sqRender(){
   ${!canEdit&&!SqS.viewOnly?`<div class="lock">View only — ask admin to assign you</div>`:""}
   ${edit?`<div style="margin-bottom:14px"><label class="l">Team Logo</label><label class="up" style="display:inline-flex;padding:7px 18px">📷 ${d.logo?"Change":"Upload"} Logo<input type="file" accept="image/*" data-up="logo"></label></div>`:""}
   <div class="main"><div class="grid">${cards}</div><div><div class="card cap"><div class="glow"></div><div class="inner"><div class="cl">★ CAPTAIN ★</div><div class="num" style="top:36px;font-size:13px">18</div><div class="img">${d.cap_pic?`<img src="data:image/jpeg;base64,${d.cap_pic}">`:`<svg viewBox="0 0 24 24" fill="none" style="width:45%;opacity:.25"><circle cx="12" cy="8" r="4" stroke="#c8a84b" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#c8a84b" stroke-width="1.5" stroke-linecap="round"/></svg>`}</div><div class="nb">${esc(d.cap_name||"Captain")}</div></div></div>${edit?`<div class="ed"><input type="text" id="cn" value="${esc(d.cap_name)}" placeholder="Captain Name">${up("cap")}</div>`:""}</div></div>
-  <div class="bar"><button class="btn sec auto" id="sq-back">🏠 Squads</button><button class="btn sec auto" id="dl">📥 Download Image</button>${SqS.viewOnly?`<div class="badge">👁 View Only</div>`:`<div class="seg"><button id="vw" class="${edit?"":"on"}">👁 View</button><button id="ed" class="${edit?"on":""}" ${(d.is_locked||!canEdit)?"disabled":""}>✏️ Edit</button></div>`}<div class="sp"></div><div class="msg ${SqS.msg.startsWith("✅")?"ok":"err"}" style="margin:0">${SqS.msg}</div>${edit?`<button class="btn auto" id="save">💾 Save All Changes</button>`:""}</div></div>`;
+  <div class="bar"><button class="btn sec auto" id="sq-back">← Back to Squad</button><button class="btn sec auto" id="sq-hm" title="Home">🏠</button><button class="btn sec auto" id="dl" title="Download squad image">📥</button>${SqS.viewOnly?`<div class="badge">👁 View Only</div>`:`<div class="seg"><button id="vw" class="${edit?"":"on"}">👁 View</button><button id="ed" class="${edit?"on":""}" ${(d.is_locked||!canEdit)?"disabled":""}>✏️ Edit</button></div>`}<div class="sp"></div><div class="msg ${SqS.msg.startsWith("✅")?"ok":"err"}" style="margin:0">${SqS.msg}</div>${edit?`<button class="btn auto" id="save" title="Save all changes">💾</button>`:""}</div></div>`;
   $("#sq-back").onclick=()=>sqHome();
+  $("#sq-hm").onclick=()=>setView("home");
   if($("#vw")){$("#vw").onclick=()=>{SqS.edit=false;SqS.msg="";sqRender();};$("#ed").onclick=()=>{SqS.edit=true;SqS.msg="";sqRender();};}
-  $("#dl").onclick=async e=>{const b=e.currentTarget;b.textContent="Preparing…";try{await sqDownloadImg();}catch{SqS.msg="Could not create image.";}b.textContent="📥 Download Image";};
+  $("#dl").onclick=async e=>{const b=e.currentTarget;b.textContent="…";try{await sqDownloadImg();}catch{SqS.msg="Could not create image.";}b.textContent="📥";};
   host.querySelectorAll("[data-n]").forEach(el=>el.oninput=()=>d.names[+el.dataset.n]=el.value);
   if($("#cn"))$("#cn").oninput=e=>d.cap_name=e.target.value;
   host.querySelectorAll("[data-up]").forEach(el=>el.onchange=async()=>{
@@ -798,9 +842,9 @@ function sqTourEdit(id){
     <label class="l">Description</label><input type="text" id="te-d" value="${esc(t.desc||"")}" placeholder="Short description">
     ${Auth.admin?`<div class="hint">ID: ${esc(t.id)} · Owner: ${esc(t.owner||"—")}</div>`:""}
   </div>
-  <div class="bar"><button class="btn sec auto" id="te-back">← Back</button><div class="sp"></div><button class="btn auto" id="te-save">💾 Save Tournament</button></div>
+  <div class="bar"><button class="btn sec auto" id="te-back" title="Back">←</button><div class="sp"></div><button class="btn auto" id="te-save" title="Save tournament">💾</button></div>
   <div class="msg" id="te-m"></div></div>`;
-  $("#te-back").onclick=()=>sqAdminRender();
+  $("#te-back").onclick=()=>{Auth.admin?sqAdminRender():myTours();};
   $("#te-save").onclick=async()=>{
     const n=$("#te-n").value.trim();if(!n){$("#te-m").textContent="Name required.";return;}
     $("#te-save").disabled=true;$("#te-save").textContent="Saving…";
@@ -814,7 +858,7 @@ function sqAdminRender(msg="",cls="ok"){
   if(!isAdmin()){setView("home");return;}
   const cur=SqS.tour||"default";
   sqRoot().innerHTML=`<div class="wrap"><div class="th"><div><div class="tn gold">Admin Panel</div><div class="ts">Teams · Tournaments · Locks</div></div></div>
-  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sec auto" id="a-home">🏠 Home</button><button class="btn sec auto" id="a-users">👥 Scorers</button><button class="btn sec auto" id="a-eds">✏️ Squad Editors</button></div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="btn sec auto" id="a-home" title="Home">🏠</button><button class="btn sec auto" id="a-users">👥 Scorers</button><button class="btn sec auto" id="a-eds">✏️ Squad Editors</button></div>
   <div class="panel"><div class="ph">🏆 Create Tournament</div><div class="row" style="border:none"><input type="text" id="tn" placeholder="Tournament name" style="flex:2;min-width:160px"><input type="text" id="tn-s" placeholder="Season" style="flex:1;min-width:90px"><input type="text" id="tn-y" placeholder="Year" style="flex:1;min-width:70px"><button class="btn sm auto" id="ct">Create</button></div></div>
   <div class="panel"><div class="ph">🏆 Tournaments (${Tours.length})</div>
   ${Tours.map(t=>{const tc=SqTeams.filter(x=>x.tid===t.id).length,mc=ScMatches.filter(x=>x.tid===t.id).length;const st=tourStatus(t.id);return`<div class="row"><b>${st==="archived"?"🗄️":"🏆"} ${esc(t.name)} <small style="opacity:.65">· ${esc(tourSeasonYear(t.id))}${t.city?` · ${esc(t.city)}`:""} · ${tc} teams · ${mc} matches · ${st}</small></b><button class="btn sm auto" data-tedit="${esc(t.id)}">Edit</button><button class="btn sm sec auto" data-tarch="${esc(t.id)}">${st==="archived"?"Unarchive":"Archive"}</button><button class="btn sm sec auto" data-tdel="${esc(t.id)}" style="color:#ff7b7b;border-color:#ff7b7b66">Delete</button></div>`;}).join("")}
@@ -823,7 +867,7 @@ function sqAdminRender(msg="",cls="ok"){
   <div class="panel"><div class="ph">Teams (${SqTeams.filter(t=>t.tid===cur).length})</div>
   ${SqTeams.map((t,i)=>t.tid!==cur?"":`<div class="row"><b>${t.locked?"🔒":"🔓"} ${esc(t.name)}</b><button class="btn sm auto" data-act="lock" data-i="${i}">${t.locked?"Unlock":"Lock"}</button><button class="btn sm auto" data-act="view" data-i="${i}">View</button><button class="btn sm sec auto" data-act="del" data-i="${i}" style="color:#ff7b7b;border-color:#ff7b7b66">Delete</button></div>`).join("")}
   <div class="row" style="border:none"><button class="btn sm auto" id="lall">🔒 Lock All</button><button class="btn sm auto" id="uall">🔓 Unlock All</button></div></div>
-  <div class="bar"><button class="btn sec auto" id="hm">🏠 Home</button><div class="msg ${cls}" id="am" style="margin:0">${esc(msg)}</div></div></div>`;
+  <div class="bar"><button class="btn sec auto" id="hm" title="Home">🏠</button><div class="msg ${cls}" id="am" style="margin:0">${esc(msg)}</div></div></div>`;
   const flash=(t,c)=>{$("#am").className="msg "+c;$("#am").textContent=t;};
   const run=async(fn,ok)=>{try{await fn();await sqLoadTeams();sqAdminRender(ok,"ok");}catch(e){flash(e.message||"Error","err");}};
   $("#hm").onclick=()=>setView("home");$("#a-home").onclick=()=>setView("home");$("#a-users").onclick=()=>usersAdmin("squad");$("#a-eds").onclick=()=>squadEditors();
@@ -851,24 +895,30 @@ function sqAdminRender(msg="",cls="ok"){
 
 // ================= MANAGE SCORERS (tournament -> score-only users) =================
 // Scorers can ONLY score matches in their tournament. No create/delete/schedule.
-async function usersAdmin(from){
-  const host=from==="squad"?sqRoot():$("#scorer-app");
-  if(from!=="squad"){CurView="scorer";document.body.dataset.view="scorer";$("#home-app").hidden=true;$("#squad-app").hidden=true;$("#scorer-app").hidden=false;const sc=$("#css-scorer");if(sc)sc.disabled=false;const sq=$("#css-squad");if(sq)sq.disabled=true;}
-  host.innerHTML=`<div class="${from==="squad"?"wrap":"w"}"><div class="msg">Loading scorers…</div></div>`;
+// Owners manage their own tournaments via usersAdmin("mine", tid).
+async function usersAdmin(from,forceTid){
+  const host=(from==="squad"||from==="mine")?sqRoot():$("#scorer-app");
+  if(from!=="squad"&&from!=="mine"){CurView="scorer";document.body.dataset.view="scorer";$("#home-app").hidden=true;$("#squad-app").hidden=true;$("#scorer-app").hidden=false;const sc=$("#css-scorer");if(sc)sc.disabled=false;const sq=$("#css-squad");if(sq)sq.disabled=true;}
+  if(from==="mine"){
+    if(!forceTid||!canManageTour(forceTid)){toast("Not allowed.");return myTours();}
+    CurView="squad";document.body.dataset.view="squad";$("#home-app").hidden=true;$("#squad-app").hidden=false;$("#scorer-app").hidden=true;
+    const sq2=$("#css-squad");if(sq2)sq2.disabled=false;const sc2=$("#css-scorer");if(sc2)sc2.disabled=true;document.body.classList.remove("sq");
+  }
+  host.innerHTML=`<div class="${from==="scorer"?"w":"wrap"}"><div class="msg">Loading scorers…</div></div>`;
   let users=[];
-  try{users=(await getDocs(collection(db,"scorers"))).docs.map(d=>({id:d.id,...d.data()}));}catch(e){host.innerHTML=`<div class="${from==="squad"?"wrap":"w"}"><div class="msg">Not allowed — sign in as admin.</div><button class="btn s" id="ub2">← Back</button></div>`;host.querySelector("#ub2").onclick=()=>setView("home");return;}
+  try{users=(await getDocs(collection(db,"scorers"))).docs.map(d=>({id:d.id,...d.data()}));}catch(e){host.innerHTML=`<div class="${from==="scorer"?"w":"wrap"}"><div class="msg">Couldn't load scorers — sign in as admin, or ask for access (Firestore rules may block this).</div><div class="ib-row"><button class="btn s ib" id="ub2" title="Back">←</button></div></div>`;host.querySelector("#ub2").onclick=()=>from==="mine"?myTours():setView("home");return;}
   await loadTours();
-  let selT=ScS.tour||Tours[0]?.id||"default";
+  let selT=forceTid||ScS.tour||Tours[0]?.id||"default";
   if(!Tours.some(t=>t.id===selT))selT=Tours[0]?.id||"default";
   let fq="";
   const inTour=u=>(u.tids||[]).includes(selT);
   const render=(fmsg="",isOk=false)=>{
     const list=users.filter(inTour).filter(u=>!fq||u.id.includes(fq));
-    host.innerHTML=`<div class="${from==="squad"?"wrap":"w"}">
-    <div class="top"><h1 class="gold">Scorers</h1><button class="btn s sm" id="u-home">🏠 Home</button></div>
+    host.innerHTML=`<div class="${from==="scorer"?"w":"wrap"}">
+    <div class="top"><h1 class="gold">Scorers</h1><button class="btn s sm" id="u-home" title="Home">🏠</button></div>
     <div class="mut c" style="margin-bottom:8px">Score-only access — scorers can score matches, nothing else.</div>
-    <label>Tournament</label><select id="us-t">${Tours.map(t=>`<option value="${esc(t.id)}" ${t.id===selT?"selected":""}>${esc(t.name)}</option>`).join("")}</select>
-    <div class="${from==="squad"?"panel":"xm"}" style="margin-top:10px"><h3 class="${from==="squad"?"ph":""}">Add scorer to ${esc(tname(selT))}</h3>
+    ${forceTid?`<div class="tg">🏆 ${esc(tname(selT))} (your tournament)</div>`:`<label>Tournament</label><select id="us-t">${Tours.map(t=>`<option value="${esc(t.id)}" ${t.id===selT?"selected":""}>${esc(t.name)}</option>`).join("")}</select>`}
+    <div class="${from==="scorer"?"xm":"panel"}" style="margin-top:10px"><h3 class="${from==="scorer"?"":"ph"}">Add scorer to ${esc(tname(selT))}</h3>
       <label>Email</label><input id="ue" type="text" autocomplete="off" placeholder="scorer@email.com">
       <label>Temp password <span class="mut">(min 6 — blank if they already have an account)</span></label><input id="up" type="password" autocomplete="new-password" placeholder="Set once, they can reset later">
       <button class="btn" id="ua">Add Scorer</button>
@@ -877,11 +927,11 @@ async function usersAdmin(from){
     <label style="margin-top:10px">Scorers in ${esc(tname(selT))} (${users.filter(inTour).length})</label>
     <input id="uq" type="text" placeholder="🔍 Filter by email…" value="${esc(fq)}">
     ${list.map(u=>`<div class="card" style="cursor:default"><div class="row"><b>${esc(u.id)}</b></div><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn s sm" data-rs="${esc(u.id)}">Send reset email</button><button class="btn s sm" data-rm="${esc(u.id)}">Remove</button></div></div>`).join("")||`<div class="mut c" style="margin:14px 0">No scorers in this tournament yet.</div>`}
-    <button class="btn s" id="ub">← Back</button><div id="msg" class="msg" style="color:${isOk?"#6be58c":""}">${esc(fmsg)}</div></div>`;
+    <div class="ib-row"><button class="btn s ib" id="ub" title="Back">←</button></div><div id="msg" class="msg" style="color:${isOk?"#6be58c":""}">${esc(fmsg)}</div></div>`;
     $("#u-home").onclick=()=>setView("home");
-    $("#us-t").onchange=e=>{selT=e.target.value;render();};
+    if($("#us-t"))$("#us-t").onchange=e=>{selT=e.target.value;render();};
     $("#uq").oninput=e=>{fq=e.target.value.toLowerCase();const pos=e.target.selectionStart;render();const q=$("#uq");if(q){q.focus();q.setSelectionRange(pos,pos);}};
-    $("#ub").onclick=()=>{if(from==="squad")sqAdmin();else if(from==="home")setView("home");else scList();};
+    $("#ub").onclick=()=>{if(from==="mine")myTours();else if(from==="squad")sqAdmin();else if(from==="home")setView("home");else scList();};
     $("#ua").onclick=async()=>{
       const em=$("#ue").value.trim().toLowerCase(),pw=$("#up").value;
       const flash=(t,ok)=>{const m=$("#msg");m.textContent=t;m.style.color=ok?"#6be58c":"";};
@@ -914,13 +964,15 @@ async function usersAdmin(from){
 }
 
 // ================= SQUAD EDITORS (team -> can-edit users, separate from scorers) =================
-async function squadEditors(){
+// Owners manage their own tournament via squadEditors(tid, "mine").
+async function squadEditors(forceTid,from){
+  if(forceTid&&!canManageTour(forceTid)){toast("Not allowed.");return myTours();}
   const host=sqRoot();
   host.innerHTML=`<div class="wrap"><div class="msg">Loading editors…</div></div>`;
   let users=[];
-  try{users=(await getDocs(collection(db,"scorers"))).docs.map(d=>({id:d.id,...d.data()}));}catch(e){host.innerHTML=`<div class="wrap"><div class="msg">Not allowed — sign in as admin.</div></div>`;return;}
+  try{users=(await getDocs(collection(db,"scorers"))).docs.map(d=>({id:d.id,...d.data()}));}catch(e){host.innerHTML=`<div class="wrap"><div class="msg">Couldn't load editors — sign in as admin, or ask for access (Firestore rules may block this).</div><div class="bar"><button class="btn sec auto" id="e-h" title="Home">🏠</button></div></div>`;host.querySelector("#e-h").onclick=()=>from==="mine"?myTours():setView("home");return;}
   await sqLoadTeams();await loadTours();
-  let selTour=SqS.tour||"default",selTeam="";
+  let selTour=forceTid||SqS.tour||"default",selTeam="";
   const teamsIn=()=>SqTeams.filter(t=>t.tid===selTour);
   if(!teamsIn().some(t=>t.id===selTeam))selTeam=teamsIn()[0]?.id||"";
   const render=(fmsg="",isOk=false)=>{
@@ -928,8 +980,8 @@ async function squadEditors(){
     const selT=SqTeams.find(t=>t.id===selTeam);
     host.innerHTML=`<div class="wrap">
     <div class="th"><div><div class="tn gold">Squad Editors</div><div class="ts">Team · Can edit squad only</div></div></div>
-    <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn sec auto" id="e-home">🏠 Home</button><button class="btn sec auto" id="e-back">← Admin</button></div>
-    <div class="panel"><label class="l">Tournament</label><select id="et">${Tours.map(t=>`<option value="${esc(t.id)}" ${t.id===selTour?"selected":""}>${esc(t.name)}</option>`).join("")}<option value="" ${selTour===""?"selected":""}>⭐ Friendly (no tournament)</option></select>
+    <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn sec auto" id="e-home" title="Home">🏠</button><button class="btn sec auto" id="e-back" title="Admin">←</button></div>
+    <div class="panel"><label class="l">Tournament</label>${forceTid?`<div class="tg">🏆 ${esc(tname(selTour))} (your tournament)</div>`:`<select id="et">${Tours.map(t=>`<option value="${esc(t.id)}" ${t.id===selTour?"selected":""}>${esc(t.name)}</option>`).join("")}<option value="" ${selTour===""?"selected":""}>⭐ Friendly (no tournament)</option></select>`}
     <label class="l">Team</label><select id="em-t">${teamsIn().map(t=>`<option value="${esc(t.id)}" ${t.id===selTeam?"selected":""}>${t.locked?"🔒 ":""}${esc(t.name)}</option>`).join("")||`<option value="">No teams</option>`}</select>
     ${selTeam?`<div class="row" style="border:none"><b>${selT&&selT.locked?"🔒 Locked — editors and admins can't update this squad until unlocked.":"🔓 Unlocked — assigned editors can update."}</b><button class="btn sm auto" id="e-lock">${selT&&selT.locked?"Unlock Team":"Lock Team"}</button></div>`:""}</div>
     <div class="panel"><div class="ph">Add editor to ${esc(selTeam||"—")}</div>
@@ -938,8 +990,8 @@ async function squadEditors(){
     <div class="panel"><div class="ph">Editors (${eds.length})</div>
     ${eds.map(u=>`<div class="row"><b>${esc(u.id)}</b><button class="btn sm auto" data-ers="${esc(u.id)}">Send reset</button><button class="btn sm sec auto" data-erm="${esc(u.id)}">Remove</button></div>`).join("")||`<div class="mut c">No editors yet.</div>`}
     </div><div class="msg ${isOk?"ok":"err"}">${esc(fmsg)}</div></div>`;
-    $("#e-home").onclick=()=>setView("home");$("#e-back").onclick=()=>sqAdmin();
-    $("#et").onchange=e=>{selTour=e.target.value;SqS.tour=selTour;selTeam=teamsIn()[0]?.id||"";render();};
+    $("#e-home").onclick=()=>setView("home");$("#e-back").onclick=()=>from==="mine"?myTours():sqAdmin();
+    if($("#et"))$("#et").onchange=e=>{selTour=e.target.value;SqS.tour=selTour;selTeam=teamsIn()[0]?.id||"";render();};
     $("#em-t").onchange=e=>{selTeam=e.target.value;render();};
     if($("#e-lock"))$("#e-lock").onclick=async()=>{const t=SqTeams.find(x=>x.id===selTeam);if(!t)return;await setDoc(doc(db,"squads",selTeam),{is_locked:!t.locked},{merge:true});await sqLoadTeams();render(!t.locked?"Team locked — nobody can update this squad until unlocked.":"Team unlocked — editors can update again.",true);};
     $("#ea").onclick=async()=>{
@@ -959,6 +1011,27 @@ async function squadEditors(){
     host.querySelectorAll("[data-ers]").forEach(b=>b.onclick=async()=>{try{await sendPasswordResetEmail(auth,b.dataset.ers);toast("Reset email sent.");}catch(e){toast(e.message);}});
   };
   render();
+}
+
+// Tournament owners manage their own tournaments (scorers, teams, locks, matches, details)
+async function myTours(){
+  if(!Auth.user){setView("home");return;}
+  CurView="squad";document.body.dataset.view="squad";
+  $("#home-app").hidden=true;$("#squad-app").hidden=false;$("#scorer-app").hidden=true;
+  const sq=$("#css-squad");if(sq)sq.disabled=false;const sc=$("#css-scorer");if(sc)sc.disabled=true;
+  document.body.classList.remove("sq");
+  sqRoot().innerHTML=`<div class="wrap"><div class="msg">Loading your tournaments…</div></div>`;
+  await sqLoadTeams();await loadTours();
+  const mine=Tours.filter(t=>t.id!=="default"&&tourOwner(t.id)===myEmail());
+  if(!mine.length){sqRoot().innerHTML=`<div class="wrap"><div class="msg">You don't own any tournament yet — create one from Squad Creator or Scorer.</div><div class="bar"><button class="btn sec auto" id="mt-h" title="Home">🏠</button></div></div>`;$("#mt-h").onclick=()=>setView("home");return;}
+  sqRoot().innerHTML=`<div class="wrap"><div class="th"><div><div class="tn gold">My Tournaments</div><div class="ts">Manage what you created</div></div></div>
+  ${mine.map(t=>{const tc=SqTeams.filter(x=>x.tid===t.id).length,mc=ScMatches.filter(x=>x.tid===t.id).length;return`<div class="panel"><div class="ph">🏆 ${esc(t.name)} <small style="opacity:.65">· ${esc(tourSeasonYear(t.id))} · ${tc} teams · ${mc} matches</small></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm auto" data-msc="${esc(t.id)}">👥 Scorers</button><button class="btn sm auto" data-mtm="${esc(t.id)}">👥 Teams &amp; Locks</button><button class="btn sm auto" data-mma="${esc(t.id)}">🏏 Matches</button><button class="btn sm sec auto" data-med="${esc(t.id)}">✎ Edit</button></div></div>`;}).join("")}
+  <div class="bar"><button class="btn sec auto" id="mt-h" title="Home">🏠</button></div></div>`;
+  $("#mt-h").onclick=()=>setView("home");
+  sqRoot().querySelectorAll("[data-msc]").forEach(b=>b.onclick=()=>usersAdmin("mine",b.dataset.msc));
+  sqRoot().querySelectorAll("[data-mtm]").forEach(b=>b.onclick=()=>squadEditors(b.dataset.mtm,"mine"));
+  sqRoot().querySelectorAll("[data-mma]").forEach(b=>b.onclick=()=>{ScS.tour=b.dataset.mma;ScS.tab="m";setView("scorer");});
+  sqRoot().querySelectorAll("[data-med]").forEach(b=>b.onclick=()=>sqTourEdit(b.dataset.med));
 }
 
 // ================= SCORER (ported, admin-only delete kept) =================
@@ -1097,14 +1170,14 @@ function scList(){
   ScS.view="list";ScS.ex=false;if(ScS.unsubM)ScS.unsubM();
   const scoped=()=>!!Auth.user&&!Auth.admin;
   const mineTid=id=>(Auth.tids||[]).includes(id);
-  const mineMatch=m=>mineTid(m.tid)||((m.owner||"").toLowerCase()===myEmail());
+  const mineMatch=m=>mineTid(m.tid)||tourOwns(m)||((m.owner||"").toLowerCase()===myEmail());
   let vt=scoped()?Tours.filter(t=>mineTid(t.id)||tourOwner(t.id)===myEmail()):Tours;
   if(ScS.tour&&ScS.tour!=="friendly"&&!vt.some(t=>t.id===ScS.tour))ScS.tour="";
   if(scoped()&&!ScS.tour&&vt.length===1)ScS.tour=vt[0].id;
   const ownedTour=Tours.some(t=>tourOwner(t.id)===myEmail());
   const ownedMatch=ScMatches.some(m=>((m.owner||"").toLowerCase()===myEmail()));
   const scoreOnly=!Auth.admin&&!!Auth.user&&(Auth.tids||[]).length>0&&!ownedTour&&!ownedMatch;
-  scRoot().innerHTML=`<div class="w"><div class="top"><button class="btn s sm" id="bk-h">🏠 Home</button><h1 class="gold">🏏 Smart Scorer</h1>${Auth.user?`<button class="btn s sm" id="so">Sign Out</button>`:`<button class="btn s sm" id="ad">Sign In</button>`}</div>
+  scRoot().innerHTML=`<div class="w"><div class="top"><button class="btn s sm" id="bk-h" title="Home">🏠</button><h1 class="gold">🏏 SmartCric</h1>${Auth.user?`<button class="btn s sm" id="so" title="Sign out">⏻</button>`:`<button class="btn s sm" id="ad" title="Sign in">🔑</button>`}</div>
     ${scoreOnly?`<div class="tg">👋 You are a scorer — open a match below and score. No scheduling or deleting.</div>`:""}
     <select id="ft">${!scoped()?`<option value="">All tournaments</option>`:vt.length>1?`<option value="">All my tournaments</option>`:""}${vt.map(t=>`<option value="${esc(t.id)}" ${t.id===ScS.tour?"selected":""}>${esc(t.name)}</option>`).join("")}<option value="friendly" ${ScS.tour==="friendly"?"selected":""}>⭐ Friendly</option></select>
     <input id="fq" type="text" placeholder="🔍 Search team / venue…" value="${esc(ScS.fq||"")}" style="margin-top:2px">
@@ -1125,7 +1198,7 @@ function scMatchList(){
   if(!scRoot().querySelector("#ml"))return;
   const scoped=()=>!!Auth.user&&!Auth.admin;
   const mineTid=id=>(Auth.tids||[]).includes(id);
-  const mineMatch=m=>mineTid(m.tid)||((m.owner||"").toLowerCase()===myEmail());
+  const mineMatch=m=>mineTid(m.tid)||tourOwns(m)||((m.owner||"").toLowerCase()===myEmail());
   const vt=scoped()?Tours.filter(t=>mineTid(t.id)||tourOwner(t.id)===myEmail()):Tours;
   if(scoped()&&!vt.length&&!ScMatches.some(m=>mineMatch(m))){scRoot().querySelector("#ml").innerHTML=`<div class="mut c" style="margin:24px 0">No tournaments yet — tap 🏆 New Tournament, then ＋ Schedule Match.</div>`;return;}
   if(ScS.tab==="p"){if(ScS.tour==="friendly"){scRoot().querySelector("#ml").innerHTML=`<div class="mut c" style="margin:24px 0">Points table doesn't apply to friendly matches — each game stands alone.</div>`;return;}scRoot().querySelector("#ml").innerHTML=scPoints()+`<div style="display:flex;gap:8px;margin-top:10px"><button class="btn s sm" id="pt-dl">📥 Points Image</button><button class="btn s sm" id="pt-sh">📲 Share Points</button></div>`;$("#pt-dl").onclick=()=>scDownloadPointsImage(false);$("#pt-sh").onclick=()=>scDownloadPointsImage(true);return;}
@@ -1151,11 +1224,11 @@ function scMatchList(){
 async function scSchedule(){
   const ownedTour=Tours.some(t=>tourOwner(t.id)===myEmail());
   const ownedMatch=ScMatches.some(m=>((m.owner||"").toLowerCase()===myEmail()));
-  if(!Auth.admin&&(Auth.tids||[]).length>0&&!ownedTour&&!ownedMatch){scRoot().innerHTML=`<div class="w"><div class="tg">Scorer access only — you can score assigned matches, not schedule new ones.</div><button class="btn s" id="bk">← Back</button></div>`;scRoot().querySelector("#bk").onclick=scList;return;}
+  if(!Auth.admin&&(Auth.tids||[]).length>0&&!ownedTour&&!ownedMatch){scRoot().innerHTML=`<div class="w"><div class="tg">Scorer access only — you can score assigned matches, not schedule new ones.</div><button class="btn s ib" id="bk" title="Back">←</button></div>`;scRoot().querySelector("#bk").onclick=scList;return;}
   scRoot().innerHTML=`<div class="w"><div class="mut c">Loading teams…</div></div>`;
   try{
     if(!ScSquadsCache){const sn=await getDocs(collection(db,"squads"));ScSquadsCache=sn.docs.map(d=>({id:d.id,name:d.data().team_name||d.id,tid:d.data().tournament||"default",cap:d.data().captain_name||"",pl:[...new Set([d.data().captain_name,...(d.data().player_list||[])].filter(Boolean))]}));}
-  }catch(e){scRoot().innerHTML=`<div class="w"><div class="msg">${esc(e.message)}</div><button class="btn s" id="bk">← Back</button></div>`;scRoot().querySelector("#bk").onclick=scList;return;}
+  }catch(e){scRoot().innerHTML=`<div class="w"><div class="msg">${esc(e.message)}</div><button class="btn s ib" id="bk" title="Back">←</button></div>`;scRoot().querySelector("#bk").onclick=scList;return;}
   const now=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
   const stnOpts=Tours.filter(t=>Auth.admin||tourStatus(t.id)!=="archived");
   scRoot().innerHTML=`<div class="w"><div class="top"><h1 class="gold">Schedule Match</h1></div>
@@ -1168,7 +1241,7 @@ async function scSchedule(){
     <label>City</label><input id="cy" type="text" placeholder="e.g. Riyadh">
     <label>Toss won by (optional)</label><select id="tw"><option value="">Not decided yet</option></select>
     <label>Toss decision</label><select id="td"><option value="">—</option><option>Bat</option><option>Bowl</option></select>
-    <button class="btn" id="sv">Save Match</button><button class="btn s" id="bk">Cancel</button><div id="msg" class="msg"></div></div>`;
+    <button class="btn" id="sv">Save Match</button><button class="btn s ib" id="bk" title="Cancel">✕</button><div id="msg" class="msg"></div></div>`;
   const fill=()=>{const tid=$("#stn").value;const pool=(tid===""?ScSquadsCache:ScSquadsCache.filter(t=>t.tid===tid)).sort((a,b)=>a.name.localeCompare(b.name));const o=pool.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}${tid===""&&t.tid?` (${esc(tname(t.tid))})`:""}</option>`).join("");$("#ta").innerHTML=o;$("#tb").innerHTML=o;if($("#tb").options.length>1)$("#tb").selectedIndex=1;const d=tourDefOvers(tid);if(d)$("#ov").value=d;const tw=$("#tw");if(tw){const cur=tw.value;tw.innerHTML=`<option value="">Not decided yet</option>`+[$("#ta").selectedOptions[0]?.text||"Team A",$("#tb").selectedOptions[0]?.text||"Team B"].map(n=>`<option ${cur===n?"selected":""}>${esc(n)}</option>`).join("");}};
   $("#stn").onchange=fill;fill();scRoot().querySelector("#bk").onclick=scList;
   scRoot().querySelectorAll("[data-ov]").forEach(b=>b.onclick=()=>{$("#ov").value=b.dataset.ov;});
@@ -1189,7 +1262,7 @@ async function scSchedule(){
 function scOpenMatch(id){
   ScS.view="match";ScS.ex=false;ScS.editInfo=false;ScS.endMenu=false;ScS.sel={1:[],2:[]};ScS.sub={1:"",2:""};ScS.sumOpen=undefined;ScS.out=null;ScS.cb=false;if(ScS.unsubM)ScS.unsubM();
   ScS.unsubM=onSnapshot(scRef(id),s=>{
-    if(!s.exists()){scRoot().innerHTML=`<div class="w"><div class="msg">Match not found.</div><button class="btn s" id="bk">← Matches</button></div>`;scRoot().querySelector("#bk").onclick=scList;return;}
+    if(!s.exists()){scRoot().innerHTML=`<div class="w"><div class="msg">Match not found.</div><button class="btn s ib" id="bk" title="Matches">←</button></div>`;scRoot().querySelector("#bk").onclick=scList;return;}
     ScS.m={...s.data(),id:s.id,history:s.data().history||[]};scMatchView();
   });
 }
@@ -1344,12 +1417,10 @@ function scMatchView(){
   const outUI=()=>ScS.out==="menu"?`<div class="xm"><h3>HOW OUT?</h3><div class="xg" style="grid-template-columns:repeat(2,1fr)">${KINDS.map(([k,t])=>`<button class="sb" style="font-size:17px" data-ok="${k}">${t}</button>`).join("")}</div><button class="btn s" id="oc">Cancel</button></div>`:`<div class="xm"><h3>${KINDS.find(x=>x[0]===ScS.out)[1].toUpperCase()}</h3>${["ro","rtd","rth"].includes(ScS.out)?`<label>${ScS.out==="ro"?"Batter out":"Batter"}</label>${sel("od",cb2)}`:""}${ScS.out==="ro"?`<label>Runs completed</label><select id="orr">${[0,1,2,3].map(v=>`<option>${v}</option>`).join("")}</select>`:""}${["c","st","ro"].includes(ScS.out)?fsel:""}<button class="btn" id="ocf">Confirm</button><button class="btn s" id="oc">Cancel</button></div>`;
   const cbUI=()=>`<div class="xm"><h3>CHANGE BATTER</h3><label>Replace</label>${sel("cr",cb2)}<label>With</label>${sel("cw",xiB.filter(p=>!outs.has(p)&&p!==c.s&&p!==c.n))}<button class="btn" id="cbc">Confirm</button><button class="btn s" id="cbx">Cancel</button></div>`;
   const tossLine=m.tossWon?`<div class="mut c" style="margin-bottom:6px">🪙 ${esc(m.tossWon)} won the toss${m.tossDec?" &amp; chose "+esc(m.tossDec):""}</div>`:"";
-  let h=`<div class="w"><div class="top"><button class="btn s sm" id="bk">← Matches</button><button class="btn s sm" id="sh-link">🔗 Copy Link</button><a class="btn s sm" target="_blank" href="https://wa.me/?text=${encodeURIComponent((i.done?`🏆 ${i.res}\n`:"")+`${m.n1} vs ${m.n2} — ${tname(m.tid)}\n🔗 ${view}`)}">📲 Share</a></div><div class="mut c" style="margin-bottom:2px">${esc(tname(m.tid))} · ${m.overs} overs${m.ball?" · "+esc(m.ball)+" ball":""}${m.when?" · "+when(m.when):""}${m.venue?" · "+esc(m.venue):""}${m.city?", "+esc(m.city):""}</div>${tossLine}`;
-  if(A)h+=ScS.editInfo
-    ?`<div class="xm"><h3>EDIT MATCH INFO</h3><div style="display:flex;gap:8px"><div style="flex:1"><label>Overs</label><input id="ei-ov" type="number" min="1" max="50" value="${m.overs}"></div><div style="flex:1"><label>Ball</label><select id="ei-bl">${["Leather","Tennis","Synthetic","Other"].map(b=>`<option ${m.ball===b?"selected":""}>${b}</option>`).join("")}</select></div></div><label>Ground</label><input id="ei-vn" type="text" value="${esc(m.venue||"")}"><label>City</label><input id="ei-cy" type="text" value="${esc(m.city||"")}"><div style="display:flex;gap:8px"><div style="flex:1"><label>Toss won by</label><select id="ei-tw"><option value="">Not decided</option>${[m.n1,m.n2].map(n=>`<option ${m.tossWon===n?"selected":""}>${esc(n)}</option>`).join("")}</select></div><div style="flex:1"><label>Decision</label><select id="ei-td"><option value="">—</option>${["Bat","Bowl"].map(d=>`<option ${m.tossDec===d?"selected":""}>${d}</option>`).join("")}</select></div></div><label>Date &amp; time</label><input id="ei-dt" type="datetime-local" value="${new Date((m.when||Date.now())-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16)}"><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" style="flex:1" id="ei-sv">Save</button><button class="btn s" style="flex:1" id="ei-x">Cancel</button></div></div>`
-    :`<button class="btn s sm" id="ei" style="margin-bottom:8px">✎ Edit Match Info</button>`;
+  let h=`<div class="w"><div class="top"><button class="btn s sm ib" id="bk" title="Matches">🏠</button><button class="btn s sm ib" id="sh-link" title="Copy match link">🔗</button><a class="btn s sm ib" target="_blank" title="Share on WhatsApp" href="https://wa.me/?text=${encodeURIComponent((i.done?`🏆 ${i.res}\n`:"")+`${m.n1} vs ${m.n2} — ${tname(m.tid)}\n🔗 ${view}`)}">📲</a>${A?`<button class="btn s sm ib" id="ei" title="Edit match info">✎</button>`:""}</div><div class="mut c" style="margin-bottom:2px">${esc(tname(m.tid))} · ${m.overs} overs${m.ball?" · "+esc(m.ball)+" ball":""}${m.when?" · "+when(m.when):""}${m.venue?" · "+esc(m.venue):""}${m.city?", "+esc(m.city):""}</div>${tossLine}`;
+  if(A&&ScS.editInfo)h+=`<div class="xm"><h3>EDIT MATCH INFO</h3><div style="display:flex;gap:8px"><div style="flex:1"><label>Overs</label><input id="ei-ov" type="number" min="1" max="50" value="${m.overs}"></div><div style="flex:1"><label>Ball</label><select id="ei-bl">${["Leather","Tennis","Synthetic","Other"].map(b=>`<option ${m.ball===b?"selected":""}>${b}</option>`).join("")}</select></div></div><label>Ground</label><input id="ei-vn" type="text" value="${esc(m.venue||"")}"><label>City</label><input id="ei-cy" type="text" value="${esc(m.city||"")}"><div style="display:flex;gap:8px"><div style="flex:1"><label>Toss won by</label><select id="ei-tw"><option value="">Not decided</option>${[m.n1,m.n2].map(n=>`<option ${m.tossWon===n?"selected":""}>${esc(n)}</option>`).join("")}</select></div><div style="flex:1"><label>Decision</label><select id="ei-td"><option value="">—</option>${["Bat","Bowl"].map(d=>`<option ${m.tossDec===d?"selected":""}>${d}</option>`).join("")}</select></div></div><label>Date &amp; time</label><input id="ei-dt" type="datetime-local" value="${new Date((m.when||Date.now())-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16)}"><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" style="flex:1" id="ei-sv">Save</button><button class="btn s" style="flex:1" id="ei-x">Cancel</button></div></div>`;
   if(m.status==="scheduled"){
-    h+=`<div class="card" style="cursor:default"><div class="vs c"><b>${esc(m.n1)}</b> vs <b>${esc(m.n2)}</b></div><div class="mut c">${esc(m.venue||"")}${m.city?" · "+esc(m.city):""}${m.ball?" · "+esc(m.ball)+" ball":""} · ${esc(when(m.when))}</div></div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn s sm" id="fx-dl">🖼️ Fixture Image</button><button class="btn s sm" id="fx-sh">📲 Share Fixture + Link</button></div>`;
+    h+=`<div class="card" style="cursor:default"><div class="vs c"><b>${esc(m.n1)}</b> vs <b>${esc(m.n2)}</b></div><div class="mut c">${esc(m.venue||"")}${m.city?" · "+esc(m.city):""}${m.ball?" · "+esc(m.ball)+" ball":""} · ${esc(when(m.when))}</div></div><div class="ib-row" style="margin-top:8px"><button class="btn s sm ib" id="fx-dl" title="Download fixture image">🖼️</button><button class="btn s sm ib" id="fx-sh" title="Share fixture + link">↗️</button></div>`;
     if(A)h+=`${P?scSquadPick(m,1)+scSquadPick(m,2):""}<button class="btn" id="st">Start Match</button>`;
     else h+=`<div class="tg">Match not started yet</div>`;
   }else{
@@ -1357,25 +1428,26 @@ function scMatchView(){
     if(m.innings===2&&!i.done){const need=m.inn1-m.runs+1;h+=`<div class="tg">${need>0?`🎯 Need ${need} runs in ${ovs(i.maxb-m.balls)} overs`:"✅ Target achieved!"}</div>`;}
     if(i.i1over){
       h+=`<div class="card" style="cursor:default;text-align:center"><div class="os gold" style="font-size:24px">Innings Over</div><div class="os" style="font-size:44px">${m.runs}/${i.w}</div><div class="mut">${esc(i.bat)} — 1st innings</div><div>${esc(i.bowl)} to chase</div></div>`;
-      if(A)h+=`<button class="btn" id="s2">Start 2nd Innings</button><button class="btn s" id="un">↩ Undo last ball</button>`;
+      if(A)h+=`<button class="btn" id="s2">Start 2nd Innings</button><button class="btn s ib" id="un" title="Undo last ball">↩️</button>`;
     }else if(stage==="open"){
       h+=`<div class="xm"><h3>OPENING PLAYERS</h3><label>Striker</label>${sel("ps",xiB)}<label>Non-striker</label>${sel("pn",xiB)}<label>Opening bowler</label>${sel("pb",xiW)}<button class="btn" id="cf">Confirm</button></div>`;
     }else if(stage==="bat"){
       const av=xiB.filter(p=>!outs.has(p)&&p!==c.s&&p!==c.n);
-      h+=`<div class="xm"><h3>NEW BATTER</h3>${sel("pa",av)}<button class="btn" id="cf">Confirm</button></div><button class="btn s" id="un">↩ Undo last ball</button>`;
+      h+=`<div class="xm"><h3>NEW BATTER</h3>${sel("pa",av)}<button class="btn" id="cf">Confirm</button></div><button class="btn s ib" id="un" title="Undo last ball">↩️</button>`;
     }else if(stage==="bowl"){
-      h+=`<div class="xm"><h3>BOWLER FOR OVER ${Math.floor(m.balls/6)+1}</h3>${sel("pb2",xiW.filter(p=>p!==c.lb))}<button class="btn" id="cf">Confirm</button></div><button class="btn s" id="sw">⇄ Switch Strike</button><button class="btn s" id="un">↩ Undo last ball</button>`;
+      h+=`<div class="xm"><h3>BOWLER FOR OVER ${Math.floor(m.balls/6)+1}</h3>${sel("pb2",xiW.filter(p=>p!==c.lb))}<button class="btn" id="cf">Confirm</button></div><div class="ib-row"><button class="btn s ib" id="sw" title="Switch strike">⇄</button><button class="btn s ib" id="un" title="Undo last ball">↩️</button></div>`;
     }else if(A&&!i.done){
-      h+=ScS.out?outUI():ScS.cb?cbUI():ScS.ex?`<div class="xm"><h3>WIDE BALLS</h3><div class="xg" style="grid-template-columns:repeat(5,1fr)">${[0,1,2,3,4].map(v=>`<button class="sb" data-xk="wd" data-xv="${v}">W+${v}</button>`).join("")}</div><h3>NO BALLS</h3><div class="xg" style="grid-template-columns:repeat(6,1fr)">${[0,1,2,3,4,6].map(v=>`<button class="sb" data-xk="nb" data-xv="${v}">N+${v}</button>`).join("")}</div><button class="btn s" id="xc">Cancel</button></div>`:`<div class="g4">${[0,1,2,3].map(v=>`<button class="sb" data-r="${v}">${v}</button>`).join("")}</div><div class="g4"><button class="sb f" data-r="4">4</button><button class="sb s6" data-r="6">6</button><button class="sb o" id="out">OUT</button><button class="sb u" id="un">UNDO</button></div><button class="sb" id="ex" style="width:100%;margin:0 0 8px;font-size:18px;letter-spacing:2px">ADD EXTRAS</button>${c?`<div class="g2"><button class="btn s" id="sw">⇄ Switch Strike</button><button class="btn s" id="cb">✎ Change Batter</button></div>`:""}`;
-    }else if(A&&i.done)h+=`<button class="btn s" id="un">↩ Undo last ball</button>`+(m.endType?`<button class="btn s" id="reopen" style="margin-top:8px">↩ Reopen Match</button>`:"");
+      h+=ScS.out?outUI():ScS.cb?cbUI():ScS.ex?`<div class="xm"><h3>WIDE BALLS</h3><div class="xg" style="grid-template-columns:repeat(5,1fr)">${[0,1,2,3,4].map(v=>`<button class="sb" data-xk="wd" data-xv="${v}">W+${v}</button>`).join("")}</div><h3>NO BALLS</h3><div class="xg" style="grid-template-columns:repeat(6,1fr)">${[0,1,2,3,4,6].map(v=>`<button class="sb" data-xk="nb" data-xv="${v}">N+${v}</button>`).join("")}</div><button class="btn s" id="xc">Cancel</button></div>`:`<div class="g4">${[0,1,2,3].map(v=>`<button class="sb" data-r="${v}">${v}</button>`).join("")}</div><div class="g4"><button class="sb f" data-r="4">4</button><button class="sb s6" data-r="6">6</button><button class="sb o" id="out">OUT</button><button class="sb u" id="un">UNDO</button></div><button class="sb" id="ex" style="width:100%;margin:0 0 8px;font-size:18px;letter-spacing:2px">ADD EXTRAS</button>${c?`<div class="g2"><button class="btn s" id="sw" title="Switch strike">⇄ Switch Strike</button><button class="btn s" id="cb" title="Replace batter">✎ Replace Batter</button></div>`:""}`;
+    }else if(A&&i.done)h+=`<div class="ib-row"><button class="btn s ib" id="un" title="Undo last ball">↩️</button>${m.endType?`<button class="btn s ib" id="reopen" title="Reopen match">↪️</button>`:""}</div>`;
     if(A&&m.status==="live"&&!i.done)h+=ScS.endMenu
       ?`<div class="xm"><h3>END MATCH AS</h3><div class="xg" style="grid-template-columns:repeat(2,1fr)"><button class="sb" style="font-size:15px" data-end="abandoned">Abandoned</button><button class="sb" style="font-size:15px" data-end="noresult">No Result</button></div><label>Walkover winner</label><select id="wo-w"><option value="">— pick team —</option><option>${esc(m.n1)}</option><option>${esc(m.n2)}</option></select><label>Note (optional)</label><input id="end-note" type="text" placeholder="e.g. rain"><div style="display:flex;gap:8px;margin-top:8px"><button class="btn" style="flex:1" id="end-wo">Walkover Win</button><button class="btn s" style="flex:1" id="end-x">Cancel</button></div></div>`
       :`<button class="btn s" id="endm" style="margin-top:8px">🏁 End Match</button>`;
     if(!i.done)h+=`<div class="mut c">Live — updates automatically</div>`;
-    h+=`<details id="sd" class="mut" style="margin-top:12px" ${(ScS.sumOpen??(m.status==="completed"||ScS.sumParam))?"open":""}><summary>📊 Match Summary</summary><div style="margin-top:8px">${scSummary(m)}<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><a class="btn s sm" target="_blank" href="https://wa.me/?text=${encodeURIComponent(scSummaryText(m,view+"&summary=1"))}">📲 Text</a><button class="btn s sm" id="dls">📥 Image</button><button class="btn s sm" id="dls-sh">📲 Share Image + Link</button></div></div></details>`;
+    h+=`<details id="sd" class="mut" style="margin-top:12px" ${(ScS.sumOpen??(m.status==="completed"||ScS.sumParam))?"open":""}><summary>📊 Match Summary</summary><div style="margin-top:8px">${scSummary(m)}<div class="ib-row" style="margin-top:8px"><a class="btn s sm ib" target="_blank" title="Share summary text" href="https://wa.me/?text=${encodeURIComponent(scSummaryText(m,view+"&summary=1"))}">📲</a><button class="btn s sm ib" id="dls" title="Download summary image">📥</button><button class="btn s sm ib" id="dls-sh" title="Share summary image + link">↗️</button></div></div></details>`;
     if(m.xi1)h+=`<details class="mut" style="margin-top:10px"><summary>Playing XIs &amp; 12th players</summary>${[1,2].map(k=>`<div style="margin-top:6px"><b>${esc(m["n"+k])}</b>: ${esc((m["xi"+k]||[]).join(", "))}<br>12th: ${esc(m["s"+k]||"–")}</div>`).join("")}</details>`;
   }
-  if(A)h+=`<button class="btn s" id="cp" style="margin-top:14px">📋 Copy Overlay Link</button><div class="mut c" style="word-break:break-all;font-size:11px">${esc(ov)}</div>`;
+  if(A)h+=`<button class="btn s" id="cp" style="margin-top:14px">📋 Copy Scoreticker Link</button><div class="mut c" style="word-break:break-all;font-size:11px">${esc(ov)}</div>`;
+  if(A)h+=`<div class="mut c" style="margin-top:10px">Classic ticker color</div><div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">${[["","Classic","linear-gradient(135deg,#8cf230,#4e9f12)"],["neon","Neon","linear-gradient(135deg,#67e8f9,#0284c7)"],["red","Red","linear-gradient(135deg,#ff7a7a,#c81e1e)"],["blue","Blue","linear-gradient(135deg,#7aa5ff,#1d4ed8)"]].map(([v,t,g])=>`<button class="btn s sm" data-os="${v}" style="flex:1 1 30%;${(m.overlayStyle||"")===v?`background:${g};color:#0a0a1a;border:none;`:""}">${t}${(m.overlayStyle||"")===v?" ✓":""}</button>`).join("")}</div>`;
   h+=`</div>`;
   const y=scrollY;
   scRoot().innerHTML=h+`<div id="msg" class="msg"></div>`;
@@ -1412,7 +1484,8 @@ function scMatchView(){
   on("#cb",()=>{ScS.cb=true;scMatchView();});on("#cbx",()=>{ScS.cb=false;scMatchView();});
   on("#cbc",()=>{const r=$("#cr").value,w=$("#cw").value;if(!w)return scFlash("No batter available.");ScS.cb=false;scAct(()=>updateDoc(scRef(m.id),{cur:{...c,[c.s===r?"s":"n"]:w}}));});
   on("#ex",()=>{ScS.ex=true;scMatchView();});on("#xc",()=>{ScS.ex=false;scMatchView();});
-  on("#cp",e=>navigator.clipboard.writeText(ov).then(()=>{e.target.textContent="✅ Copied!";setTimeout(()=>e.target.textContent="📋 Copy Overlay Link",2000);}));
+  on("#cp",e=>navigator.clipboard.writeText(ov).then(()=>{e.target.textContent="✅ Copied!";setTimeout(()=>e.target.textContent="📋 Copy Scoreticker Link",2000);}));
+  scRoot().querySelectorAll("[data-os]").forEach(b=>b.onclick=()=>scAct(()=>updateDoc(scRef(m.id),{overlayStyle:b.dataset.os})));
   on("#sh-link",()=>navigator.clipboard.writeText(view).then(()=>toast("Match link copied — share it to view live score.")));
   on("#ei",()=>{ScS.editInfo=true;scMatchView();});
   on("#ei-x",()=>{ScS.editInfo=false;scMatchView();});
@@ -1435,12 +1508,44 @@ function scSquadPick(m,k){
   const pl=m["pl"+k],sel=ScS.sel[k],need=Math.min(11,pl.length),rest=pl.filter(p=>!sel.includes(p));
   return`<div class="xm"><h3>${esc(m["n"+k])} — PLAYING XI (${sel.length}/${need})</h3><div class="chips">${pl.map(p=>`<button class="chip ${sel.includes(p)?"on":""}" data-k="${k}" data-p="${esc(p)}">${esc(p)}</button>`).join("")}</div><label>12th player</label><select data-sub="${k}"><option value="">— none —</option>${rest.map(p=>`<option ${ScS.sub[k]===p?"selected":""}>${esc(p)}</option>`).join("")}</select></div>`;
 }
+const scTok=x=>x.w?`<i class="cw">W</i>`:x.e==="wd"?`<i class="cx">Wd${x.r>1?x.r-1:""}</i>`:x.e==="nb"?`<i class="cx">Nb${x.r>1?x.r-1:""}</i>`:x.r===4||x.r>=6?`<i class="cg">${x.r}</i>`:x.r===0?`<i class="c0">•</i>`:`<i>${x.r}</i>`;
+function scLastOverBalls(h){const out=[];let legal=0;for(let k=(h||[]).length-1;k>=0;k--){const x=h[k];if(x.e==="ret")continue;out.unshift(x);if(x.b&&++legal>=6)break;}return out;}
+function scInnPanel(m){
+  const d=scInn(m.history||[],m.cur),i=scInfo(m);
+  const bats=[...d.bats].sort((a,b)=>b.r-a.r).slice(0,3);
+  const bows=d.bows.map(x=>{const p=x.f.split("-");return{n:x.n,w:+p[0],r:+p[1],o:p[2]};}).sort((a,b)=>b.w-a.w||a.r-b.r).slice(0,2);
+  return`<div class="ob-over"><div class="ob-over-h">End of innings</div><div class="ob-over-s">${esc(abbr(i.bat))} ${m.runs}-${i.w} <small>(${ovs(m.balls)})</small></div>${bats.map(b=>`<div class="ob-over-p">${esc(b.n)} ${b.r}(${b.b})${b.out?"":"*"}</div>`).join("")}${bows.map(o=>`<div class="ob-over-p">${esc(o.n)} ${o.w}-${o.r} (${o.o})</div>`).join("")}</div>`;
+}
+function scEndPanel(m){
+  const i=scInfo(m);
+  const inn1line=m.innings===2?`<div class="ob-over-p">${esc(m.bat1===2?m.n2:m.n1)} ${m.inn1}-${m.inn1w??0} (${ovs(m.inn1b??0)})</div>`:"";
+  const inn2line=`<div class="ob-over-p">${esc(i.bat)} ${m.runs}-${i.w} (${ovs(m.balls)})</div>`;
+  const allB={},allO={};
+  [...(m.hist1||[]),...(m.history||[])].forEach(x=>{
+    if(x.s){const b=allB[x.s]??={n:x.s,r:0,b:0};b.r+=x.br||0;if(x.e!=="wd")b.b++;}
+    if(x.o){const o=allO[x.o]??={n:x.o,w:0,r:0};o.r+=x.r||0;if(x.w&&x.k!=="ro")o.w++;}
+  });
+  const tb=Object.values(allB).sort((a,b)=>b.r-a.r)[0],to=Object.values(allO).sort((a,b)=>b.w-a.w||a.r-b.r)[0];
+  return`<div class="ob-over"><div class="ob-over-h">End of match</div><div class="ob-over-r">🏆 ${esc((i.res||"").toUpperCase())}</div>${inn1line}${inn2line}${tb?`<div class="ob-over-p">⭐ ${esc(tb.n)} ${tb.r}(${tb.b})</div>`:""}${to?`<div class="ob-over-p">⚾ ${esc(to.n)} ${to.w}-${to.r}</div>`:""}</div>`;
+}
+function scOverPanel(m){
+  const i=scInfo(m),co=Math.floor((m.balls||0)/6);if(co<1)return"";
+  const balls=scLastOverBalls(m.history||[]);
+  const runs=balls.reduce((a,x)=>a+(x.r||0),0),wkts=balls.filter(x=>x.w).length;
+  const c=m.cur||{};
+  const bl=n=>{if(!n)return"";const[r,b]=scBStat(m.history||[],n);return`${esc(n)} ${r}(${b})`;};
+  const bats=[c.s,c.n].filter(Boolean).map(bl).filter(Boolean).join(" · ");
+  const lastO=[...(m.history||[])].reverse().find(x=>x.o);
+  let bowl="";if(lastO&&lastO.o){let r=0,b=0,w=0;(m.history||[]).forEach(x=>{if(x.o===lastO.o){r+=x.r;b+=x.b;if(x.w&&x.k!=="ro")w++;}});bowl=`${esc(lastO.o)} ${w}-${r} (${Math.floor(b/6)}.${b%6})`;}
+  return`<div class="ob-over"><div class="ob-over-h">End of over ${co}</div><div class="ob-over-s">${esc(abbr(i.bat))} ${m.runs}-${i.w} <small>(${ovs(m.balls)})</small></div><div class="ob-over-b"><div class="cs">${balls.map(scTok).join("")}</div></div><div class="ob-over-r">${runs} RUN${runs===1?"":"S"} · ${wkts} WKT${wkts===1?"":"S"}</div>${bats?`<div class="ob-over-p">${bats}</div>`:""}${bowl?`<div class="ob-over-p">${bowl}</div>`:""}</div>`;
+}
 function scBar(m){
   const i=scInfo(m),h=m.history,c=m.cur||{};
+  const style=m.overlayStyle||"",theme=["gold","neon","red","blue"].includes(style)?" "+style:"";
   if(m.status==="scheduled"||i.done){
     const txt=i.done?`🏆 ${esc(i.res)}`:`${esc(m.n1)} v ${esc(m.n2)}`;
     const sub=i.done?`${esc(m.bat1===2?m.n2:m.n1)} ${m.inn1}/${m.inn1w??0} · ${esc(i.bat)} ${m.runs}/${i.w}`:esc(when(m.when));
-    return`<div class="ob" style="height:5rem"><div class="ob-credit">Created by Amanullah Khan</div><div class="ob1"><div class="lp"><div class="tm"><b style="font:700 3.4rem/1 Oswald">${esc(abbr(m.n1))}</b></div></div><div class="bn"><b>${txt}</b><span>${sub}</span></div><div class="rp"><div class="tm"><b style="font:700 3.4rem/1 Oswald;color:#fff">${esc(abbr(m.n2))}</b></div></div></div></div>`;
+    return`<div class="ob${theme}" style="height:5rem"><div class="ob-credit">Created by Amanullah Khan</div><div class="ob1"><div class="lp"><div class="tm"><b style="font:700 3.4rem/1 Oswald">${esc(abbr(m.n1))}</b></div></div><div class="bn"><b>${txt}</b><span>${sub}</span></div><div class="rp"><div class="tm"><b style="font:700 3.4rem/1 Oswald;color:#fff">${esc(abbr(m.n2))}</b></div></div></div></div>`;
   }
   const fig=n=>{let r=0,b=0,w=0;h.forEach(x=>{if(x.o===n){r+=x.r;b+=x.b;if(x.w&&x.k!=="ro")w++;}});return`${w}-${r}<small>(${Math.floor(b/6)}.${b%6})</small>`;};
   let ov=[],lc=0,full=false;
@@ -1458,7 +1563,7 @@ function scBar(m){
   let mid="";
   if(i.inn===1){const proj=crr>0?Math.round((crr*m.overs)).toFixed(0):m.runs;mid=`CRR ${crr} · PROJ ${proj}`;}
   else{const need=m.inn1-m.runs+1;const rrr=left>0&&need>0?(need/(left/6)).toFixed(2):"0.00";const needTxt=need>0?`NEED ${need} OFF ${left}`:"TARGET ACHIEVED";mid=`CRR ${crr} · RRR ${rrr} · <span style="color:#ffd700">TGT ${m.inn1+1}</span> · ${needTxt}`;}
-  return`<div class="ob"><div class="ob-credit">Created by Amanullah Khan</div><div class="ob1"><div class="lp"><div class="tm"><b style="font:700 3.4rem/1 Oswald">${esc(abbr(i.bat))}</b></div></div><div class="sc">${m.runs}-${i.w}</div><div class="ovs"><small>OVERS</small><b>${ovs(m.balls)}</b><i>(${m.overs})</i></div>${[0,1].map(k=>bs[k]?bt(bs[k]):`<div class="bt"></div>`).join("")}<div class="rp"><div class="tm"><b style="font:700 3.4rem/1 Oswald;color:#fff">${esc(abbr(i.bowl))}</b></div></div></div><div class="ob2"><div class="to">THIS<br>OVER</div><div class="cs">${circ.join("")}</div><div class="mid">${mid}</div><div class="bw">${esc((c.b||"—").toUpperCase())}${c.b?`<em>${fig(c.b)}</em>`:""}</div></div></div>`;
+  return`<div class="ob${theme}"><div class="ob-credit">Created by Amanullah Khan</div><div class="ob1"><div class="lp"><div class="tm"><b style="font:700 3.4rem/1 Oswald">${esc(abbr(i.bat))}</b></div></div><div class="sc">${m.runs}-${i.w}</div><div class="ovs"><small>OVERS</small><b>${ovs(m.balls)}</b><i>(${m.overs})</i></div>${[0,1].map(k=>bs[k]?bt(bs[k]):`<div class="bt"></div>`).join("")}<div class="rp"><div class="tm"><b style="font:700 3.4rem/1 Oswald;color:#fff">${esc(abbr(i.bowl))}</b></div></div></div><div class="ob2"><div class="to">THIS<br>OVER</div><div class="cs">${circ.join("")}</div><div class="mid">${mid}</div><div class="bw">${esc((c.b||"—").toUpperCase())}${c.b?`<em>${fig(c.b)}</em>`:""}</div></div></div>`;
 }
 async function scLoadPics(m){
   if(ScS.picsFor===m.id)return;ScS.picsFor=m.id;ScS.pics={1:{},2:{}};
@@ -1467,17 +1572,51 @@ async function scLoadPics(m){
     try{const d=(await getDoc(doc(db,"squads",m["t"+k]))).data()||{};(d.player_list||[]).forEach((n,i)=>{const p=(d.squad_pics||{})[i];if(n&&p)ScS.pics[k][n]=p;});if(d.captain_name&&d.cap_pic)ScS.pics[k][d.captain_name]=d.cap_pic;}catch{}
   }
 }
+function scSplashFor(m){
+  const h=m.history||[];if(!h.length)return"";
+  const x=h[h.length-1];
+  if(x.s&&!x.w){
+    const[r,b]=scBStat(h,x.s),before=r-(x.br||0);
+    if(before<100&&r>=100)return`<div class="ob-sp hundred"><b>Hundred!</b><span>${esc(x.s)} ${r} (${b})</span></div>`;
+    if(before<50&&r>=50)return`<div class="ob-sp fifty"><b>Fifty!</b><span>${esc(x.s)} ${r} (${b})</span></div>`;
+  }
+  if(x.w)return`<div class="ob-sp out"><b>Out!</b><span>${esc(x.d||x.s||"")}</span></div>`;
+  if((x.br||0)===6)return`<div class="ob-sp six"><b>Six!</b><span>${esc(x.s||"")}</span></div>`;
+  if((x.br||0)===4)return`<div class="ob-sp four"><b>Four!</b><span>${esc(x.s||"")}</span></div>`;
+  return"";
+}
 function scOverlay(id){
   CurView="overlay";document.body.dataset.view="overlay";
   document.documentElement.classList.add("ovh");document.body.classList.add("ovb");
   document.body.classList.remove("light");
   $("#home-app").hidden=true;$("#squad-app").hidden=true;$("#scorer-app").hidden=false;
   const sq=$("#css-squad");if(sq)sq.disabled=true;const sc=$("#css-scorer");if(sc)sc.disabled=false;
-  let last=null;const draw=()=>{scRoot().innerHTML=`<div class="w">`+(last?scBar(last):"")+`</div>`;};
+  let last=null,prevLen=-1,prevOver=-1,prevDone=false,prevI1=false,splash="",splashT=null,overHtml="",overNum=0,overT=null,innHtml="",innT=null,endHtml="",endT=null;
+  const paint=()=>{scRoot().innerHTML=`<div class="w">`+(last?scBar(last):"")+splash+overHtml+innHtml+endHtml+`</div>`;};
+  const hideOver=()=>{overHtml="";clearTimeout(overT);};
+  const hideInn=()=>{innHtml="";clearTimeout(innT);};
+  const hideEnd=()=>{endHtml="";clearTimeout(endT);};
   onSnapshot(scRef(id),s=>{
-    if(!s.exists()){last=null;return draw();}
-    last={...s.data(),id:s.id,history:s.data().history||[]};draw();
-    if(ScS.picsFor!==s.id)scLoadPics(last).then(draw);
+    if(!s.exists()){last=null;prevLen=-1;prevOver=-1;prevDone=false;prevI1=false;splash="";overHtml="";innHtml="";endHtml="";clearTimeout(splashT);clearTimeout(overT);clearTimeout(innT);clearTimeout(endT);return paint();}
+    last={...s.data(),id:s.id,history:s.data().history||[]};
+    const len=last.history.length,co=Math.floor((last.balls||0)/6),info=scInfo(last),doneNow=info.done,i1Now=info.i1over,innNow=last.innings||1;
+    if(prevLen>=0){
+      if(len>prevLen){
+        splash=scSplashFor(last);clearTimeout(splashT);if(splash)splashT=setTimeout(()=>{splash="";paint();},6000);
+        if(!prevDone&&doneNow){hideOver();hideInn();endHtml=scEndPanel(last);clearTimeout(endT);if(endHtml)endT=setTimeout(()=>{hideEnd();paint();},25000);}
+        else if(!prevI1&&i1Now&&innNow===1){hideOver();innHtml=scInnPanel(last);clearTimeout(innT);if(innHtml)innT=setTimeout(()=>{hideInn();paint();},15000);}
+        else{
+          if(overHtml&&last.balls>overNum*6)hideOver();
+          if(last.balls>0&&co>0&&co>prevOver){overNum=co;overHtml=scOverPanel(last);clearTimeout(overT);if(overHtml)overT=setTimeout(()=>{hideOver();paint();},12000);}
+        }
+      }
+      else if(len<prevLen){splash="";hideOver();hideInn();hideEnd();clearTimeout(splashT);}
+      if(innHtml&&(innNow!==1||!i1Now))hideInn();
+      if(endHtml&&!doneNow)hideEnd();
+      if(overHtml&&last.balls>overNum*6)hideOver();
+    }
+    prevLen=len;prevOver=co;prevDone=doneNow;prevI1=i1Now;paint();
+    if(ScS.picsFor!==s.id)scLoadPics(last).then(paint);
   });
 }
 
