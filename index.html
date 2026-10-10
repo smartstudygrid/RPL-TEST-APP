@@ -115,6 +115,8 @@ tr.pt-top td{background:rgba(245,208,115,.10)}
 /* ============ LIGHT MODE (body.light) — share images (#sumImg) & broadcast overlay (.ob) stay dark ============ */
 .hm-menu{position:fixed;left:14px;top:14px;z-index:9600;width:46px;height:46px;border-radius:999px;border:1px solid rgba(200,168,75,.55);background:linear-gradient(135deg,#c8a84b,#f5d073);color:#0a0a1a;font-size:21px;font-weight:800;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.45);transition:transform .12s ease}
 .hm-menu:active{transform:scale(.93)}
+/* reserve space so the fixed menu never covers view headers/buttons */
+#home-app,#squad-app,#scorer-app{padding-top:60px}
 body.light .hm-menu{background:linear-gradient(135deg,#b8912a,#f5d073);border-color:#b8912a}
 body.ovb .hm-menu,body[data-view="overlay"] .hm-menu{display:none}
 .hm-scrim{position:fixed;inset:0;z-index:9690;background:rgba(2,8,24,.6);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility .22s}
@@ -483,7 +485,7 @@ body.ovb .foot{display:none}
 <div id="squad-app" hidden></div>
 <div id="scorer-app" hidden></div>
 <div id="sumImg" class="sum-img"></div>
-<div class="hm-foot"><a href="https://www.smartstudygrid.com" target="_blank">www.smartstudygrid.com</a> &nbsp;|&nbsp; Created by Amanullah Khan</div>
+<div class="hm-foot">Created by Amanullah Khan</div>
 <button id="hm-menu" class="hm-menu" title="Menu">☰</button>
 <div id="hm-scrim" class="hm-scrim"></div>
 <nav id="hm-drawer" class="hm-drawer" aria-label="App menu"><div id="hm-drawer-body"></div></nav>
@@ -549,12 +551,12 @@ function renderDrawer(){
   const count=n=>n?`<span class="hm-count">${n}</span>`:"";
   let h=`<div class="hm-dhead"><div><div class="hm-dapp">SmartCric</div><div class="hm-duser">${u?esc(u.email)+(Auth.admin?" · Admin":""):Auth.guest?"Guest":"Not signed in"}</div></div><button class="hm-dx" id="hm-drawer-x" title="Close">✕</button></div>`;
   if(!u&&!Auth.guest){
-    h+=`<div class="hm-dsec">Welcome</div>`+item("live","🔴","Live Matches",count(ScMatches.filter(m=>m.status==="live").length))+item("signin","🔑","Sign In");
+    h+=`<div class="hm-dsec">Welcome</div>`+item("home","🏠","Home")+item("live","🔴","Live Matches",count(ScMatches.filter(m=>m.status==="live").length))+item("signin","🔑","Sign In");
   }else{
     h+=`<div class="hm-dsec">Now</div>`+item("live","🔴","Live Matches",liveN?`<span class="hm-count"><span class="hm-live-dot"></span>${liveN}</span>`:"");
-    h+=`<div class="hm-dsec">Play</div>`+item("scorer","🏏","Score a Match")+item("squad","👥","Squads & Teams");
+    h+=`<div class="hm-dsec">Play</div>`+item("home","🏠","Home")+item("scorer","🏏","Score a Match")+item("squad","👥","Squads & Teams");
     h+=`<div class="hm-dsec">My Stuff</div>`;
-    if(myTours.length)h+=item("mytours","🏆","My Tournaments",count(myTours.length));
+    if(u)h+=item("mytours","🏆","My Tournaments",count(myTours.length));
     h+=item("mymatches","📋","My Matches",count(myM.length))+item("mysquads","🛡️","My Squads",count(mySq));
     h+=`<div class="hm-dsec">Create</div>`+item("newt","➕","New Tournament")+item("newteam","➕","New Team")+item("newmatch","➕","New Match");
     if(Auth.admin)h+=`<div class="hm-dsec">Admin</div>`+item("admint","🏆","Tournaments")+item("admins","👥","Scorers")+item("admine","✏️","Squad Editors");
@@ -572,7 +574,8 @@ async function drawerGo(go){
   if(go==="signin"){closeDrawer();Auth.guest=false;await refreshRole(null);setView("home");return;}
   if(go==="signout"){closeDrawer();await signOut(auth);Auth.guest=false;await refreshRole(null);setView("home");return;}
   closeDrawer();
-  if(go==="live"||go==="scorer"){ScS.tab="m";setView("scorer");}
+  if(go==="home")setView("home");
+  else if(go==="live"||go==="scorer"){ScS.tab="m";setView("scorer");}
   else if(go==="squad")setView("squad");
   else if(go==="mytours")myTours();
   else if(go==="mymatches"){ScS.tab="m";ScS.tour="";setView("scorer");}
@@ -721,9 +724,11 @@ async function sqUserCreateTournament(){
   const id=name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"t"+Date.now();
   if(Tours.some(t=>t.id===id))return toast("That tournament already exists.");
   const season=(v.season||"").trim(),year=(v.year||"").trim();
-  await setDoc(doc(db,"tournaments",id),{name,season,year,tagline:"",city:"",desc:"",status:"active",defOvers:"",created:Date.now(),owner:myEmail()});
-  await setDoc(doc(db,"scorers",myEmail()),{tids:arrayUnion(id)},{merge:true});
-  await refreshRole(Auth.user);await loadTours();await sqLoadTeams();toast(`Tournament "${name}" created.`);sqHome();
+  try{
+    await setDoc(doc(db,"tournaments",id),{name,season,year,tagline:"",city:"",desc:"",status:"active",defOvers:"",created:Date.now(),owner:myEmail()});
+    await setDoc(doc(db,"scorers",myEmail()),{tids:arrayUnion(id)},{merge:true});
+    await refreshRole(Auth.user);await loadTours();await sqLoadTeams();toast(`Tournament "${name}" created.`);sqHome();
+  }catch(e){toast("Couldn't create tournament: "+(e.message||e.code||"unknown error"));}
 }
 async function sqUserAddTeam(){
   if(!Auth.user)return toast("Sign in to create a team.");
@@ -735,9 +740,11 @@ async function sqUserAddTeam(){
   if(tid!==""&&!Tours.some(t=>t.id===tid))return toast("Unknown tournament.");
   const did=tid===""?"F__"+tn:tid==="default"?tn:tid+"__"+tn;
   if(SqTeams.some(t=>t.id.toLowerCase()===did.toLowerCase()))return toast("That team already exists.");
-  await setDoc(doc(db,"squads",did),{team_name:tn,tournament:tid,pw_hash:TEAM_HASH,is_locked:false,player_list:Array(17).fill(""),squad_pics:{},captain_name:"",cap_pic:null,team_logo:null,owner:myEmail(),created:Date.now()});
-  await setDoc(doc(db,"scorers",myEmail()),{teamIds:arrayUnion(did)},{merge:true});
-  ScSquadsCache=null;await refreshRole(Auth.user);await sqLoadTeams();toast(`Team "${tn}" created — you can edit it now.`);sqHome();
+  try{
+    await setDoc(doc(db,"squads",did),{team_name:tn,tournament:tid,pw_hash:TEAM_HASH,is_locked:false,player_list:Array(17).fill(""),squad_pics:{},captain_name:"",cap_pic:null,team_logo:null,owner:myEmail(),created:Date.now()});
+    await setDoc(doc(db,"scorers",myEmail()),{teamIds:arrayUnion(did)},{merge:true});
+    ScSquadsCache=null;await refreshRole(Auth.user);await sqLoadTeams();toast(`Team "${tn}" created — you can edit it now.`);sqHome();
+  }catch(e){toast("Couldn't create team: "+(e.message||e.code||"unknown error"));}
 }
 function setCssForHome(){const sq=$("#css-squad"),sc=$("#css-scorer");if(sq)sq.disabled=true;if(sc)sc.disabled=true;}
 
